@@ -24,7 +24,13 @@ export function getUniqueIdentificator() {
     next_id++
     return next_id
 }
-
+/**
+ * Will overwrite every property of original object with properties of pulling_from 
+ * @example {a:2,b:7} + {b:9,c:6} => {a:2,b:9,c:6}
+ * @param {Object} original 
+ * @param {Object} pulling_from 
+ * @returns 
+ */
 export function mergeObject(original, pulling_from) {
     if (original == undefined)
         original = pulling_from
@@ -41,4 +47,12 @@ export function mergeObject(original, pulling_from) {
 
         }
     return original
+}
+
+export function reverseObject(object) {
+    let result = {}
+    for (const key in object) {
+        result[object[key]] = key
+    }
+    return result
 }

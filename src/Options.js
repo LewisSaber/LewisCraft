@@ -1,16 +1,21 @@
+import { Game } from "./game.js"
 import { BackGround } from "./gui/background.js"
 import { Button } from "./gui/Button.js"
 import Gui from "./gui/Gui.js"
 import { Label } from "./gui/Label.js"
 import { Vector } from "./math.js"
+import TranslateName, { TranslateKeyCode } from "./Translator.js"
+import { reverseObject } from "./utility.js"
 
 export default class OptionsController {
     constructor(game) {
+        /** @type {Game}*/
         this.game = game
 
         this.createMainGui()
         this.createOptionButton()
         this.createGeneralTab()
+        this.createControlsTab()
         this.generalTab.open()
     }
     createMainGui() {
@@ -43,20 +48,53 @@ export default class OptionsController {
         let languageLabel = new Label().setText("Select language").setFontSize(0.3).setPosition(new Vector(0.3, 0.3))
         this.generalTab.addComponent(languageLabel)
     }
-}
-/*  let OptionsBackGround = new BackGround()
-            .setImg("./src/assets/background.png")
-            .setSize(new Vector(2, 3))
+    createControlsTab() {
+        this.controlsTabButton = new Button()
+            .setPosition(new Vector(3))
+            .setSize(new Vector(5, 1))
+            .setDecoration(1)
+            .setFontSize(0.6)
+            .setText("Controls")
             .build()
+        this.mainGui.addComponent(this.controlsTabButton)
+        this.controlsTabButton.addAction(() => { this.controlsGui.open() })
+        this.controlsGui = new Gui()
+            .setName("controls")
+            .setPosition(new Vector(0, 1))
+        this.mainGui.addGui(this.controlsGui, "main")
 
-        this.optionGui = new Gui()
-            .setPosition(new Vector(1, 1))
-            .setName("options")
-            .addBackground(OptionsBackGround)
+        let keyBinds = this.game.getPlayer().getKeyBinds()
 
-        this.getGame().mainGui.addGui(this.optionGui, "main")
-        let testLabel = new Label().setText("Test").setPosition(new Vector(2, 2)).build()
-        this.optionGui.addComponent(testLabel)
+        let i = 0
+        let listeningActive = false
+        for (const key in keyBinds) {
+            let labelControll = new Label().setText(TranslateName(key)).setFontSize(0.3).setPosition(new Vector(0.3, 0.3 + i * 0.6))
+            this.controlsGui.addComponent(labelControll)
+            let button = new Button().setText(TranslateKeyCode(keyBinds[key])).setFontSize(0.3).setSize(new Vector(2.5, .5)).setPosition(new Vector(3.6, 0.25 + i * 0.6))
+                .addAction(() => {
 
-        let selector = new Selector().setSize(new Vector(1, 0.5)).setPosition(new Vector(4, 4)).addOption(new Option("Why", "Tho")).build()
-        this.optionGui.addComponent(selector)*/
+                    if (listeningActive == false) {
+                        listeningActive = true
+                        button.setText("")
+                        document.addEventListener("keydown", ({ code }) => { this.setKeyBind(code, key, button); listeningActive = false; }, { once: true })
+                    }
+                })
+            this.controlsGui.addComponent(button)
+            i++
+        }
+
+    }
+    setKeyBind(code, action, button) {
+        let blacklist = ["Digit0", "Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6", "Digit7", "Digit8", "Digit9",
+            "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "Escape"]
+        //passing filter
+        if (blacklist.includes(blacklist)) {
+            code = "none"
+        }
+        let keyBinds = this.game.getPlayer().addKeyBind(code, action)
+        button.setText(TranslateKeyCode(code))
+
+
+
+    }
+}

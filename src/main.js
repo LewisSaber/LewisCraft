@@ -1,4 +1,5 @@
 import { Game, loop } from "./game.js";
+import ItemStack from "./ItemStack.js";
 
 
 
@@ -36,6 +37,17 @@ HTMLElement.prototype.applyStyle = function (style) {
 
 }
 
+String.prototype.color = function (color) {
+    let elem = document.createElement("span")
+    elem.style.color = color
+    elem.innerHTML = this
+    return elem.outerHTML
+}
+
+String.prototype.capitalize = function () {
+
+    return this[0].toUpperCase() + this.substring(1)
+}
 
 
 Object.defineProperty(Object.prototype, 'get', {
@@ -68,6 +80,10 @@ window.addEventListener("resize", function () {
 window.addEventListener("mousedown", (e) => { window.g = e })
 
 
-
+function give(item, quantity) {
+    let itemS = new ItemStack(item, quantity)
+    window.game.getPlayer().inventory.add(itemS)
+}
+window.give = give
 
 

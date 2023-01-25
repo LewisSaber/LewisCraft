@@ -13,9 +13,10 @@ export class SlotCointainer extends GUIComponent {
     }
     addSlot(Slot) {
         let length = this.slots.length
-        let y = length % this.size.y
         let x = length % this.size.x
-        Slot.setPosition(new Vector(x, y))
+        let y = (length - x) % this.size.y
+
+        Slot.setPosition(new Vector(x, y).add_vec(Slot.position))
         this.slots.push(Slot)
         return this
     }
@@ -36,6 +37,7 @@ export class SlotCointainer extends GUIComponent {
     createContainer() {
         this.container = document.createElement("div")
         this.container.style.position = "absolute"
+        this.container.style.pointerEvents = "all"
 
         return this
     }
@@ -72,6 +74,10 @@ export class SlotCointainer extends GUIComponent {
         this.createContainer()
         this.pushSlots()
         this.isBuilt = true
+        this.container.onmouseleave = () => { this.onMouseLeave() }
         return this
+    }
+    onMouseLeave() {
+        window.game.cursor.toolTip.clear()
     }
 }

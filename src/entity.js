@@ -30,6 +30,7 @@ export class Entity {
         this.getSprite().render(this.coordinates.scale(this.map.getZoom()), options)
     }
     move(direction) {
-        this.coordinates.add_vec(direction)
+
+        this.coordinates = this.coordinates.add_vec(direction)
     }
 }

@@ -34,7 +34,9 @@ export default class ItemStack {
         this.update()
         return this
     }
-
+    getItem() {
+        return this.item
+    }
     getAmount() {
         return this.item.amount
     }

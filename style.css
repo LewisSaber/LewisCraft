@@ -20,3 +20,26 @@ canvas {
     float: left;
 
 }
+
+
+#tooltip_container {
+    /* line-height: 3.2vh;
+    display: none;
+    position: absolute;
+    background-size: 100% 100%;
+    pointer-events: none;
+    
+    color: lightgray;
+   
+
+    opacity: 1;
+    z-index: 1300;
+    box-shadow: none; */
+    font-size: 2.6vh;
+    padding: 1.2vh 1.4vh;
+    background: rgb(13, 0, 46);
+    border: 0.3vh solid white;
+    outline: 0.3vh solid rgb(13, 0, 46);
+    color: lightgray;
+    font-family: Minecraftia;
+}

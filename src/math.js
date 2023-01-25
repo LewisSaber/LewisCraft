@@ -14,9 +14,8 @@ export class Vector {
         return result
     }
     add_vec(vector) {
+        return new Vector(this.x + vector.x, this.y + vector.y)
 
-        this.x += vector.x
-        this.y += vector.y
     }
     vectorize() {
         let distance = this.x && this.y ? Math.abs(this.x / 2) + Math.abs(this.y / 2) : 0

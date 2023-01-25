@@ -6,6 +6,7 @@ import ItemStack from "./ItemStack.js";
 import { BackGround } from "./gui/background.js";
 import { Slot } from "./gui/Slot.js";
 import { SlotCointainer } from "./gui/SlotContainer.js";
+import { mergeObject, reverseObject } from "./utility.js";
 
 export class Player extends Entity {
     constructor(img_url, gl, vs, fs, map) {
@@ -86,16 +87,18 @@ export class Player extends Entity {
     save() {
         let saving = {
             nick: this.nick,
-            inventory: this.inventory.save()
+            inventory: this.inventory.save(),
+            keybinds: this.AllKeyBinds
         }
         console.log("saving")
-        return JSON.stringify(saving)
+        return saving
     }
 
 
     loadKeyBinds() {
         this.keyBinds = {}
         this.keyStates = {}
+        this.AllKeyBinds = {}
         this.addKeyBind("KeyW", KEYBIND_VALUES.MOVEMENT.MOVE_FORWARD)
         this.addKeyBind("KeyS", KEYBIND_VALUES.MOVEMENT.MOVE_BACK)
         this.addKeyBind("KeyA", KEYBIND_VALUES.MOVEMENT.MOVE_LEFT)
@@ -103,6 +106,11 @@ export class Player extends Entity {
         this.addKeyBind("ArrowUp", KEYBIND_VALUES.ZOOMING.ZOOM_BIG)
         this.addKeyBind("ArrowDown", KEYBIND_VALUES.ZOOMING.ZOOM_SMALL)
         this.addKeyBind("KeyE", KEYBIND_VALUES.OPEN_INVENTORY)
+        mergeObject(this.AllKeyBinds, this.loadedKeyBinds)
+        this.keyBinds = reverseObject(this.AllKeyBinds)
+    }
+    getKeyBinds() {
+        return this.AllKeyBinds
     }
     load() {
         let loading_value = this.getGame().session.getCurrentAccountPlayerInfo()
@@ -110,12 +118,13 @@ export class Player extends Entity {
             loading_value = JSON.parse(loading_value)
         }
         this.nick = loading_value.nick
-        if (loading_value.inventory)
-            this.inventory.load(loading_value.inventory)
+        this.inventory.load(loading_value.get("inventory", []))
+        this.loadedKeyBinds = loading_value.get("keybinds", {})
     }
 
     addKeyBind(key, value) {
-        this.keyBinds[key] = value
+        this.AllKeyBinds[value] = key
+        this.keyBinds = reverseObject(this.AllKeyBinds)
         this.keyStates[value] = false
     }
     render(options = {}) {
@@ -189,7 +198,7 @@ class Inventory {
     }
     load(obj) {
 
-        for (let i = 0; i < this.inventory.length; i++) {
+        for (let i = 0; i < obj.length; i++) {
             this.inventory[i].load(obj[i])
         }
     }

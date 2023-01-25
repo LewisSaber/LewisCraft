@@ -133,6 +133,10 @@ export class Game {
     getHeightMultiplier() {
         return -2 / this.map.HeightInBlocks
     }
+    /**
+     * 
+     * @returns {Player}
+     */
     getPlayer() {
         return this.map.player
     }

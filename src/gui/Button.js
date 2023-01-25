@@ -17,8 +17,8 @@ export class Button extends GUIComponent {
 
     decoration0(size) {
         return {
-            border: `inset ${size.x * 0.05}px #5f5f5f`,
-            margin: `${size.x * 0.05}px`,
+            border: `inset min(${size.x * 0.05}px,${size.y * 0.05}px) #5f5f5f`,
+
         }
     }
     decoration1(size) {
@@ -30,6 +30,7 @@ export class Button extends GUIComponent {
         }
     }
     setText(text) {
+
         this.text = text
         if (this.isBuilt)
             this.applyValues()
@@ -76,6 +77,7 @@ export class Button extends GUIComponent {
         }
     }
     applyValues() {
+
         if (this.icon) {
             this.container.setBackgroundImage(this.icon)
         }
@@ -89,7 +91,7 @@ export class Button extends GUIComponent {
         this.createContainer()
         this.applyValues()
         this.bindActionToContainer()
-
+        this.isBuilt = true
         return this
     }
 

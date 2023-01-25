@@ -1,4 +1,5 @@
 import { Vector } from "./../math.js"
+import ItemStack from "../ItemStack.js"
 
 export class Slot {
     constructor() {
@@ -152,6 +153,7 @@ export class Slot {
         toPlace.add(toGet.getItem())
     }
     onRightClick() {
+        let one = false
         let toPlace, toGet
         if (window.game.cursor.isEmpty()) {
             toPlace = window.game.cursor
@@ -160,6 +162,7 @@ export class Slot {
         else {
             toPlace = this
             toGet = window.game.cursor
+            one = true
 
         }
         /** @type {ItemStack}*/
@@ -168,8 +171,8 @@ export class Slot {
         let getterItemStack = toGet.getItem()
         let newItemStack = new ItemStack().setItem(getterItemStack.copy())
 
-        let amountBig = Math.ceil(getterItemStack.getAmount() / 2)
-        let amountSmall = getterItemStack.getAmount() - amountBig
+        let amountSmall = one ? getterItemStack.getAmount() - 1 : Math.floor(getterItemStack.getAmount() / 2)
+        let amountBig = getterItemStack.getAmount() - amountSmall
 
         newItemStack.setAmount(amountBig)
         getterItemStack.setAmount(amountSmall)
@@ -180,9 +183,10 @@ export class Slot {
 
 
     }
-    onMouseEnter() {
+    onMouseEnter(event) {
         this.isSelected = true
         this.applyDecoration()
+        window.game.cursor.makeToolTip(this.item, event)
     }
     onMouseLeave() {
         this.isSelected = false
