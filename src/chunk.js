@@ -3,6 +3,7 @@ import { Vector } from "./math.js";
 import { createEmptyArray } from "./utility.js";
 
 
+
 export class Chunk {
     constructor(gl, size, map) {
         this.gl = gl
