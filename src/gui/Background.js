@@ -21,7 +21,7 @@ export class BackGround extends GUIComponent {
     }
 
     build() {
-        this.createContainer()
+        super.build()
         this.container.setBackgroundImage(this.img)
         return this
     }

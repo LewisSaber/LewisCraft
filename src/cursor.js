@@ -10,7 +10,7 @@ export default class Cursor {
     constructor(game) {
         this.position = new Vector()
         this.item = new ItemStack()
-        this.slot = new Slot().addItem(this.item).setDecoration(1).setParent(game.mainGui).build({ cancelPointerEvents: true })
+        this.slot = new Slot().setItem(this.item).setDecoration(1).setParent(game.mainGui).build({ cancelPointerEvents: true })
         this.toolTip = new Tooltip()
         this.keyStates = {}
 
@@ -65,7 +65,7 @@ export default class Cursor {
         return this.slot.getUpdateId()
     }
     addItem(ItemStack) {
-        this.slot.addItem(ItemStack)
+        this.slot.setItem(ItemStack)
     }
     makeToolTip(ItemStack) {
         let options = {

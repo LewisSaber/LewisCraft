@@ -16,15 +16,15 @@ export default class OptionsController {
         this.createOptionButton()
         this.createGeneralTab()
         this.createControlsTab()
-        this.generalTab.open()
+
     }
     createMainGui() {
-        this.mainGui = new Gui().setName("options").setPosition(new Vector(1, 0.95))
+        this.mainGui = new Gui().setName("options").setPosition(1, 0.95)
         this.game.mainGui.addGui(this.mainGui, "main")
 
         let OptionsBackGround = new BackGround()
             .setImg("./src/assets/background.png")
-            .setSize(new Vector(15, 8.5))
+            .setSize(15, 8.5)
             .build()
         this.mainGui.addBackground(OptionsBackGround)
 
@@ -34,24 +34,24 @@ export default class OptionsController {
     }
     createOptionButton() {
         let settingsButton = new Button()
-            .setSize(new Vector(1, 1))
-            .setPosition(new Vector(1.2, 1.2))
+            .setSize(1, 1)
+            .setPosition(1.2, 1.2)
             .addAction(() => { this.mainGui.open() })
             .setIcon("./src/assets/settings.png").build()
         this.game.mapGui.addComponent(settingsButton, { fromBottom: true, fromRight: true })
     }
     createGeneralTab() {
-        this.generalTabButton = new Button().setSize(new Vector(3, 1)).setDecoration(1).setFontSize(0.7).setText("shit").build()
+        this.generalTabButton = new Button().setSize(3, 1).setDecoration(1).setFontSize(0.7).setText("shit").build()
         this.mainGui.addComponent(this.generalTabButton)
-        this.generalTab = new Gui().setPosition(new Vector(0, 1))
+        this.generalTab = new Gui().setName("optionsGeneral").setPosition(0, 1)
         this.mainGui.addGui(this.generalTab, "main")
-        let languageLabel = new Label().setText("Select language").setFontSize(0.3).setPosition(new Vector(0.3, 0.3))
+        let languageLabel = new Label().setText("Select language").setFontSize(0.3).setPosition(0.3, 0.3)
         this.generalTab.addComponent(languageLabel)
     }
     createControlsTab() {
         this.controlsTabButton = new Button()
-            .setPosition(new Vector(3))
-            .setSize(new Vector(5, 1))
+            .setPosition(3, 0)
+            .setSize(5, 1)
             .setDecoration(1)
             .setFontSize(0.6)
             .setText("Controls")
@@ -59,8 +59,8 @@ export default class OptionsController {
         this.mainGui.addComponent(this.controlsTabButton)
         this.controlsTabButton.addAction(() => { this.controlsGui.open() })
         this.controlsGui = new Gui()
-            .setName("controls")
-            .setPosition(new Vector(0, 1))
+            .setName("optionsControls")
+            .setPosition(0, 1)
         this.mainGui.addGui(this.controlsGui, "main")
 
         let keyBinds = this.game.getPlayer().getKeyBinds()
@@ -68,9 +68,9 @@ export default class OptionsController {
         let i = 0
         let listeningActive = false
         for (const key in keyBinds) {
-            let labelControll = new Label().setText(TranslateName(key)).setFontSize(0.3).setPosition(new Vector(0.3, 0.3 + i * 0.6))
+            let labelControll = new Label().setText(TranslateName(key)).setFontSize(0.3).setPosition(0.3, 0.3 + i * 0.6)
             this.controlsGui.addComponent(labelControll)
-            let button = new Button().setText(TranslateKeyCode(keyBinds[key])).setFontSize(0.3).setSize(new Vector(2.5, .5)).setPosition(new Vector(3.6, 0.25 + i * 0.6))
+            let button = new Button().setText(TranslateKeyCode(keyBinds[key])).setFontSize(0.3).setSize(2.5, .5).setPosition(3.6, 0.25 + i * 0.6)
                 .addAction(() => {
 
                     if (listeningActive == false) {

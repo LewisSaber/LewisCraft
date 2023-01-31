@@ -32,7 +32,7 @@ export default class Tooltip {
         this.container.innerHTML = `
             ${TranslateName(item.name).color(getRarityColor(item.getRarity()))}<br>
            
-           ${(TranslateRarity(item.getRarity) + " " + item.getType()).toUpperCase().color(getRarityColor(item.getRarity()))}`
+           ${(TranslateRarity(item.getRarity()) + " " + item.getType()).toUpperCase().color(getRarityColor(item.getRarity()))}`
 
         //`trash ${options.shift ? 'yes'.color("green") : 'no'}`
     }

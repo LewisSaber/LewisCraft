@@ -25,7 +25,7 @@ export class Map {
         this.zoomScale = 1
         this.chunkSize = 10
         this.renderedChunks = 0
-        this.renderDistance = new Vector(2, 2)
+        this.renderDistance = new Vector(1, 1)
 
 
         this.createSprites()
@@ -140,7 +140,9 @@ export class Map {
 
         // this.renderToBuffer()
     }
+    test() {
 
+    }
 
 
     /**

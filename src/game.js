@@ -42,7 +42,7 @@ export class Game {
 
         this.mainGui = new Gui().setHeight(10).build()
         this.createMapGui()
-        this.mapGui.open()
+
         document.getElementById("body").appendChild(this.mainGui.getContainer())
 
         this.map = new Map(this.gl, vs, fs, this)
@@ -53,8 +53,6 @@ export class Game {
         this.lastTick = 0
 
 
-        this.a = new ItemStack("Block", 30)
-        this.b = new ItemStack("Stone", 47)
 
 
         this.cursor = new Cursor(this)
@@ -75,6 +73,7 @@ export class Game {
         this.lastFrame = time
         let delta = ms / 1000
 
+        this.map.player.update(delta)
         if (time / 1000 >> 0 > this.lastSecond) {
 
             this.lastSecond = time / 1000 >> 0
@@ -101,7 +100,7 @@ export class Game {
 
         this.gl.flush()
 
-        this.map.player.update(delta)
+
         this.cursor.update()
 
     }
@@ -144,9 +143,12 @@ export class Game {
 
         this.mapGui = new Gui(this)
             .setName("map")
-            .addBackground(new BackGround().setImg("./src/assets/background.png").setPosition(new Vector(1.75, 1.2)).setSize(new Vector(9.5, 1.2)).build(), { fromBottom: true })
+            .addBackground(new BackGround().setImg("./src/assets/background.png").setPosition(1.75, 1.2).setSize(9.5, 1.2).build(), { fromBottom: true })
 
         this.mainGui.addGui(this.mapGui, "main")
 
+    }
+    getCursor() {
+        return this.cursor
     }
 }

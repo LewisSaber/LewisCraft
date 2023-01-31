@@ -52,7 +52,7 @@ export class Selector extends GUIComponent {
         this.container.setPosition(this.position.multiply(pixelSize))
     }
     build() {
-        this.createContainer()
+        super.build()
         this.refrestOptions()
         this.isBuilt = true
         return this

@@ -6,16 +6,18 @@ import ItemStack from "./ItemStack.js";
 import { BackGround } from "./gui/background.js";
 import { Slot } from "./gui/Slot.js";
 import { SlotCointainer } from "./gui/SlotContainer.js";
-import { mergeObject, reverseObject } from "./utility.js";
+import { getImg, mergeObject, reverseObject } from "./utility.js";
+import { CraftingTable } from "./CraftingTable.js";
+import { Button } from "./gui/Button.js";
 
 export class Player extends Entity {
     constructor(img_url, gl, vs, fs, map) {
         super(img_url, new Vector(0.85, 0.85), gl, vs, fs, map)
         this.position = new Vector()
-        this.coordinates = new Vector(32, 32)
+        this.coordinates = new Vector(32, 30.1)
         this.speed = 4.2
         this.map = map
-
+        this.is_shifting = false
         this.inventory = new Inventory(36)
 
 
@@ -29,61 +31,70 @@ export class Player extends Entity {
         window.addEventListener("keydown", e => this.onKeydown(e));
         window.addEventListener("keyup", e => this.onKeyUp(e));
         this.loadKeyBinds()
-        this.g = new ItemStack("Sand", 33)
+
         window.player = this
     }
     getGame() {
         return this.map.game
     }
-    createOptionGui() {
 
-
-    }
-    createMainGui() {
-        // this.createHotbar()
-        // this.mainGui = new Gui(this.map.game)
-        //     .setName("map")
-        //     .addBackground(new BackGround().setImg("./src/assets/background.png").setPosition(new Vector(1.75, 1.2)).setSize(new Vector(9.5, 1.2)).build(), { fromBottom: true })
-
-        // this.getGame().mainGui.addGui(this.mainGui, "main")
-
-        // this.hotbar.setPosition(new Vector(2.1, 1.1))
-        // this.mainGui.addComponent(this.hotbar, { fromBottom: true })
-
-
-        // this.mainGui.open()
-    }
     createHotbar() {
-        this.hotbar = new SlotCointainer().setSize(new Vector(9, 1))
+
+
+        this.hotbar = new SlotCointainer().setSize(9, 1)
+        this.hotbar.selectedSlot = 1
         for (let i = 27; i < 36; i++) {
-            let slot = new Slot().addItem(this.inventory.getSlot(i)).build()
+            let slot = new Slot().setItem(this.inventory.getItem(i)).build({ cancelPointerEvents: true })
             this.hotbar.addSlot(slot)
         }
         this.hotbar.build()
-        this.hotbar.setPosition(new Vector(2.1, 1.1))
+
+        this.hotbar.setPosition(2.1, 1.1)
         this.getGame().mapGui.addComponent(this.hotbar, { fromBottom: true })
+        this.hotbar.getSlot(0).select()
 
     }
     createInventoryGui() {
         this.InventorySlots = this.createInventorySlots()
-        let InventoryContainer = new SlotCointainer().setSize(new Vector(9, 4)).addSlotArray(this.InventorySlots).setPosition(new Vector(2.1, 4.5)).build()
+        let InventoryContainer = new SlotCointainer().setSize(9, 4).addSlotArray(this.InventorySlots).setPosition(.25, 3.9).build()
         this.InventoryGui = new Gui(this.map.game)
             .setName("inventroy")
-            .setWidth(20)
-            .addBackground(new BackGround().setImg("./src/assets/background.png").setSize(new Vector(12, 8)).setPosition(new Vector(2, 0.6)).build())
+            .setPosition(2, 0.6)
+            .addBackground(new BackGround().setImg("./src/assets/background.png").setSize(12, 8).build())
         // .addBackground(, , )
 
-
+        let leftButtons = [
+            new Button().setBackground(getImg("background")).setIcon(getImg("craftingTableFront")).setSize(1, 1)
+        ]
+        let iter = 0
+        for (const button of leftButtons) {
+            button.setPosition(-1, 1.2 * iter)
+            this.InventoryGui.addComponent(button)
+            iter++
+        }
+        console.log(this.InventoryGui.queue)
         this.getGame().mainGui.addGui(this.InventoryGui, "main")
         this.InventoryGui.addComponent(InventoryContainer)
+
+        this.craftingTableGui = new Gui()
+            .setName("crafting table")
+        //.setPosition(2, 0.6)
+        this.InventoryGui.addGui(this.craftingTableGui, "main")
+
+        this.craftingTable = new CraftingTable()
+        this.craftingTableGui.addGui(this.craftingTable.getContainer().setPosition(0.25, 0.2))
+
+
     }
+
     createInventorySlots() {
         let slots = []
         for (let ItemStack of this.inventory.getAllInventory()) {
-            slots.push(new Slot().addItem(ItemStack).build())
+            slots.push(new Slot().setItem(ItemStack).build())
         }
         return slots
     }
+
     save() {
         let saving = {
             nick: this.nick,
@@ -93,7 +104,6 @@ export class Player extends Entity {
         console.log("saving")
         return saving
     }
-
 
     loadKeyBinds() {
         this.keyBinds = {}
@@ -109,9 +119,11 @@ export class Player extends Entity {
         mergeObject(this.AllKeyBinds, this.loadedKeyBinds)
         this.keyBinds = reverseObject(this.AllKeyBinds)
     }
+
     getKeyBinds() {
         return this.AllKeyBinds
     }
+
     load() {
         let loading_value = this.getGame().session.getCurrentAccountPlayerInfo()
         if (typeof loading_value === "string") {
@@ -127,20 +139,24 @@ export class Player extends Entity {
         this.keyBinds = reverseObject(this.AllKeyBinds)
         this.keyStates[value] = false
     }
+
     render(options = {}) {
         window.game.setBuffer(this.map.entityBuffer)
         this.position = new Vector((this.map.getBlocksWidth() - this.getWidth()) / 2, this.map.getBlocksHeight() / 2 - this.getHeight() / 2)
+        this.position.x = +this.position.x.toFixed(2)
+        this.position.y = +this.position.y.toFixed(2)
         this.getSprite().render(this.position, options)
     }
 
     update(delta) {
 
-        this.move(new Vector(
-            this.keyStates[KEYBIND_VALUES.MOVEMENT.MOVE_RIGHT] - this.keyStates[KEYBIND_VALUES.MOVEMENT.MOVE_LEFT],
-            this.keyStates[KEYBIND_VALUES.MOVEMENT.MOVE_BACK] - this.keyStates[KEYBIND_VALUES.MOVEMENT.MOVE_FORWARD])
-            .vectorize().scale(delta * this.speed))
-        this.map.addZoom((this.keyStates.get(KEYBIND_VALUES.ZOOMING.ZOOM_BIG, 0) - this.keyStates.get(KEYBIND_VALUES.ZOOMING.ZOOM_SMALL, 0)) * 0.01)
-
+        if (this.getGame().mainGui.getActiveGui("main") == "map") {
+            this.move(new Vector(
+                this.keyStates[KEYBIND_VALUES.MOVEMENT.MOVE_RIGHT] - this.keyStates[KEYBIND_VALUES.MOVEMENT.MOVE_LEFT],
+                this.keyStates[KEYBIND_VALUES.MOVEMENT.MOVE_BACK] - this.keyStates[KEYBIND_VALUES.MOVEMENT.MOVE_FORWARD])
+                .vectorize().scale(delta * this.speed))
+            this.map.addZoom((this.keyStates.get(KEYBIND_VALUES.ZOOMING.ZOOM_BIG, 0) - this.keyStates.get(KEYBIND_VALUES.ZOOMING.ZOOM_SMALL, 0)) * 0.01)
+        }
         if (this.keyStates[KEYBIND_VALUES.OPEN_INVENTORY]) {
             this.keyStates[KEYBIND_VALUES.OPEN_INVENTORY] = false
             if (this.InventoryGui.isOpen) {
@@ -151,18 +167,40 @@ export class Player extends Entity {
         }
     }
 
+    isShifting() {
+        return this.is_shifting
+    }
+
+    canAddToInventory(ItemStack) {
+        return this.inventory.canAdd(ItemStack)
+    }
+
+    addToInventory(ItemStack) {
+        return this.inventory.add(ItemStack)
+    }
+
 
     onKeydown({ code }) {
 
         this.keyStates[this.keyBinds.get(code, "unbind")] = 1
+        if (code == "ShiftLeft")
+            this.is_shifting = true
+        if (this.getGame().mainGui.getActiveGui("main") == "map")
+            if (/Digit[1-9]/.test(code)) {
+                let digit = +code.replace("Digit", "")
+                this.hotbar.getSlot(this.hotbar.selectedSlot - 1).unselect()
+                this.hotbar.selectedSlot = digit
+                this.hotbar.getSlot(digit - 1).select()
+            }
     }
     onKeyUp({ code }) {
-
+        if (code == "ShiftLeft")
+            this.is_shifting = false
         this.keyStates[this.keyBinds.get(code, "unbind")] = 0
     }
 }
 
-class Inventory {
+export class Inventory {
     constructor(slots = 0) {
         this.inventory = []
         for (let i = 0; i < slots; i++) {
@@ -173,7 +211,7 @@ class Inventory {
     getAllInventory() {
         return this.inventory
     }
-    getSlot(i) {
+    getItem(i) {
         return this.inventory[i]
     }
     /**
@@ -201,6 +239,14 @@ class Inventory {
         for (let i = 0; i < obj.length; i++) {
             this.inventory[i].load(obj[i])
         }
+    }
+    canAdd(ItemStack) {
+        for (const item of this.inventory) {
+            if (item.canAdd(ItemStack))
+                return true
+
+        }
+        return false
     }
 
 

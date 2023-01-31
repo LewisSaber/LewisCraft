@@ -1,14 +1,19 @@
 import { Vector } from "./../math.js"
 import ItemStack from "../ItemStack.js"
+import { getImg, getUniqueIdentificator } from "../utility.js"
 
 export class Slot {
     constructor() {
         // this.item = new ItemStack("Empty")
-        this.isBuilt = true
+        this.isBuilt = false
         this.decoration = 0
         this.size = new Vector(1, 1)
         this.isSelected = false
         this.position = new Vector()
+        this.actionSubscribers = {
+            "left": {},
+            "right": {}
+        }
     }
     setSize(vector) {
         this.size = vector
@@ -44,7 +49,14 @@ export class Slot {
 
         }
     }
-
+    setFakeItem(ItemStack) {
+        this.fakeItem = ItemStack.copy()
+        this.update()
+    }
+    removeFakeItem() {
+        delete this.fakeItem
+        this.update()
+    }
     decoration1(size) {
         return {
 
@@ -52,7 +64,7 @@ export class Slot {
             height: `${size.x * 0.8}px`
         }
     }
-    addItem(ItemStack) {
+    setItem(ItemStack) {
         /**  @type {ItemStack} */
         this.item = ItemStack
         this.subscribingId = this.item.subscribeSlotToUpdate(this)
@@ -78,6 +90,18 @@ export class Slot {
     setParent(parent) {
         this.parent = parent
         return this
+    }
+    subscribeToAction(action, type = "left") {
+        let id = getUniqueIdentificator()
+        this.actionSubscribers[type][id] = action
+        return id
+    }
+    unsubscribeFromAction(id) {
+        if (id) {
+            for (let action of this.actionSubscribers) {
+                delete this.actionSubscribers[action][id]
+            }
+        }
     }
 
     createTag(options) {
@@ -115,15 +139,21 @@ export class Slot {
     }
     build(options = {}) {
         if (this.item == undefined)
-            this.addItem(new ItemStack("Empty"))
+            this.setItem(new ItemStack("Empty"))
         this.createTag(options)
         this.update()
         this.isBuilt = true
         return this
     }
     update() {
-        this.itemAmountContainer.innerHTML = this.item.getAmount() >= 1 ? this.item.getAmount() : ""
-        this.container.setBackgroundImage(this.item.isEmpty() ? "none" : `./src/assets/${this.item.getName()}.png`)
+        if (this.fakeItem) {
+            this.itemAmountContainer.innerHTML = this.fakeItem.getAmount() > 1 ? this.fakeItem.getAmount() : ""
+            this.container.setBackgroundImage(this.fakeItem.isEmpty() ? "none" : getImg(this.fakeItem.getName()))
+        }
+        else {
+            this.itemAmountContainer.innerHTML = this.item.getAmount() > 1 ? this.item.getAmount() : ""
+            this.container.setBackgroundImage(this.item.isEmpty() ? "none" : getImg(this.item.getName()))
+        }
 
     }
     isEmpty() {
@@ -132,8 +162,18 @@ export class Slot {
     handleClick(evt) {
 
         switch (evt.button) {
-            case 0: this.onLeftClick(); break;
-            case 2: this.onRightClick(); break;
+            case 0:
+                for (let subscriber in this.actionSubscribers.left) {
+                    this.actionSubscribers.left[subscriber]()
+                }
+                this.onLeftClick();
+                break;
+            case 2:
+                for (let subscriber in this.actionSubscribers.right) {
+                    this.actionSubscribers.right[subscriber]()
+                }
+                this.onRightClick();
+                break;
         }
     }
     getUpdateId() {
@@ -169,7 +209,7 @@ export class Slot {
 
 
         let getterItemStack = toGet.getItem()
-        let newItemStack = new ItemStack().setItem(getterItemStack.copy())
+        let newItemStack = getterItemStack.copy()
 
         let amountSmall = one ? getterItemStack.getAmount() - 1 : Math.floor(getterItemStack.getAmount() / 2)
         let amountBig = getterItemStack.getAmount() - amountSmall
@@ -183,14 +223,26 @@ export class Slot {
 
 
     }
-    onMouseEnter(event) {
+    select() {
         this.isSelected = true
         this.applyDecoration()
-        window.game.cursor.makeToolTip(this.item, event)
     }
-    onMouseLeave() {
+    getTooltipItem() {
+        return this.fakeItem ? this.fakeItem : this.item
+    }
+    canAdd(ItemStack) {
+        return this.getItem().canAdd(ItemStack)
+    }
+    onMouseEnter(event) {
+        this.select()
+        window.game.cursor.makeToolTip(this.getTooltipItem(), event)
+    }
+    unselect() {
         this.isSelected = false
         this.applyDecoration()
+    }
+    onMouseLeave() {
+        this.unselect()
     }
     getItem() {
         return this.item

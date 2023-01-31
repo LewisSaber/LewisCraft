@@ -8,13 +8,17 @@ export class SlotCointainer extends GUIComponent {
         this.slots = []
 
     }
-    getPixelSize() {
-        return this.pixelSize || this.parent.getPixelSize()
+
+    getSlot(i) {
+        return this.slots[i]
     }
     addSlot(Slot) {
+        if (!Slot.isBuilt) {
+            Slot.build()
+        }
         let length = this.slots.length
         let x = length % this.size.x
-        let y = (length - x) % this.size.y
+        let y = length / this.size.x >> 0//(length - x) % this.size.y
 
         Slot.setPosition(new Vector(x, y).add_vec(Slot.position))
         this.slots.push(Slot)
@@ -24,7 +28,7 @@ export class SlotCointainer extends GUIComponent {
         for (const slot of Slots) {
             this.addSlot(slot)
         }
-        // this.slots = this.slots.concat(Slots)
+
         return this
     }
     getSlots() {
@@ -71,7 +75,7 @@ export class SlotCointainer extends GUIComponent {
         return this
     }
     build() {
-        this.createContainer()
+        super.build()
         this.pushSlots()
         this.isBuilt = true
         this.container.onmouseleave = () => { this.onMouseLeave() }

@@ -32,5 +32,7 @@ export class Entity {
     move(direction) {
 
         this.coordinates = this.coordinates.add_vec(direction)
+        this.coordinates.x = +this.coordinates.x.toFixed(2)
+        this.coordinates.y = +this.coordinates.y.toFixed(2)
     }
 }

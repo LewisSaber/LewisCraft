@@ -14,7 +14,10 @@ export class Button extends GUIComponent {
             this.resize()
         return this
     }
-
+    setBackground(img) {
+        this.background = img
+        return this
+    }
     decoration0(size) {
         return {
             border: `inset min(${size.x * 0.05}px,${size.y * 0.05}px) #5f5f5f`,
@@ -78,8 +81,8 @@ export class Button extends GUIComponent {
     }
     applyValues() {
 
-        if (this.icon) {
-            this.container.setBackgroundImage(this.icon)
+        if (this.background) {
+            this.container.setBackgroundImage(this.background)
         }
         this.container.innerHTML = this.text
     }
@@ -88,7 +91,7 @@ export class Button extends GUIComponent {
         this.container.onmousedown = (evt) => { this.handleClick(evt) }
     }
     build() {
-        this.createContainer()
+        super.build()
         this.applyValues()
         this.bindActionToContainer()
         this.isBuilt = true

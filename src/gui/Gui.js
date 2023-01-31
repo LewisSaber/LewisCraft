@@ -14,14 +14,21 @@ export default class Gui {
         this.components = []
         this.backgrounds = []
         this.internalGuis = []
+        this.activeGuis = {}
+        this.queue = []
+        this.z_layer_additional = 0
+        this.z_layer_parental = 0
 
+    }
+    getName() {
+        return this.name
     }
     setName(name) {
         this.name = name
         return this
     }
-    setPosition(vector) {
-        this.position = vector
+    setPosition(x, y) {
+        this.position = new Vector(x, y)
         return this
     }
 
@@ -106,7 +113,16 @@ export default class Gui {
         this.computeSize()
         this.createContainer()
         this.renderBackgrounds()
+        this.applyZLayer()
         this.isBuilt = true
+        for (let component of this.queue) {
+            if (component.component instanceof Gui) {
+                this.addGui(component.component, component.options)
+            }
+            else
+                this.addComponent(component.component, component.options)
+        }
+        delete this.queue
         return this
     }
     open() {
@@ -119,9 +135,8 @@ export default class Gui {
     }
     /**
      * 
-     * @param {String} img_url 
-     * @param {Vector} position 
-     * @param {Vector} size 
+     * @param {Background} background 
+     * @param {Object} options 
      * @returns 
      */
     addBackground(background, options = {}) {
@@ -143,7 +158,8 @@ export default class Gui {
             background.background.position.x = this.size.x - background.background.position.x
 
         }
-
+        if (!background.background.isBuilt)
+            background.background.build()
         background.background.resize()
         this.attachContainer(background.background.getContainer())
     }
@@ -177,13 +193,22 @@ export default class Gui {
         return this
     }
     handleGuiOpen(gui) {
+        this.activeGuis[gui.getChannel()] = gui.getName()
         for (const internalGui in this.internalGuis[gui.getChannel()]) {
             this.internalGuis[gui.getChannel()][internalGui].close()
         }
     }
     addComponent(component, options = {}) {
-
-        component.setParent(this)
+        if (!this.isBuilt) {
+            console.log("pushing", component)
+            this.queue.push({
+                component: component,
+                options: options
+            })
+            return this
+        }
+        console.log(component)
+        component.setParent(this).setParentalZLayer(this.getZLayer() + 1)
         if (component.isBuilt == false)
             component.build()
         this.components.push(component)
@@ -214,15 +239,53 @@ export default class Gui {
     getPixelSize() {
         return this.pixelSize || this.parent.getPixelSize()
     }
+    getActiveGui(channel) {
+        return this.activeGuis.get(channel, "none")
+    }
+    setParentalZLayer(layer) {
+        this.z_layer_parental = layer
+        if (this.isBuilt) {
+            this.applyZlayer()
+        }
+        return this
+    }
+    setZLayer(layer) {
+        this.z_layer_additional = layer
+        if (this.isBuilt) {
+            this.applyZlayer()
+        }
+        return this
+
+    }
+    applyZLayer() {
+        this.getContainer().setZLayer(this.z_layer_parental + this.z_layer_additional)
+        return this
+    }
+    getZLayer() {
+        return this.z_layer_parental + this.z_layer_additional
+    }
 
 
     addGui(gui, channel = "none") {
-        gui.setId().setChannel(channel).setParrent(this).build()
-        if (this.internalGuis[channel] == undefined)
+        if (!this.isBuilt) {
+            this.queue.push({
+                component: gui,
+                options: channel
+            })
+            return this
+        }
+        let shouldOpen = false
+        gui.setId().setChannel(channel).setParrent(this).setParentalZLayer(this.getZLayer() + 1).build()
+        if (this.internalGuis[channel] == undefined) {
+            shouldOpen = true
             this.internalGuis[channel] = {}
+            console.log("should open", gui.getName())
+        }
         this.internalGuis[channel][gui.getId()] = gui
         gui.resize()
         this.attachContainer(gui.getContainer())
+        if (shouldOpen)
+            gui.open()
         return this
     }
 

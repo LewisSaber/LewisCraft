@@ -42,7 +42,7 @@ export class Label extends GUIComponent {
         this.container.style.fontSize = this.fontSize * (pixelSize.x)
     }
     build() {
-        this.createContainer()
+        super.build()
         this.loadValues()
 
         this.isBuilt = true

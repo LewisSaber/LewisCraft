@@ -1,9 +1,10 @@
-import { classes } from "./Item.js"
+import { classes, getDeprecatedName } from "./Item.js"
 import { getUniqueIdentificator } from "./utility.js"
 
 
 export default class ItemStack {
     constructor(itemName = "Empty", amount = 0) {
+
         this.item = new classes[itemName](amount)
         this.subscribed = {}
         this.update()
@@ -16,6 +17,14 @@ export default class ItemStack {
 
         return ItemStack.item.name == this.item.name
     }
+    canAdd(ItemStack) {
+        if (this.isEmpty())
+            return true
+        if (this.isSame(ItemStack))
+            if (this.item.getEmpty() >= ItemStack.getAmount())
+                return true
+        return false
+    }
     add(ItemStack) {
         if (this.isEmpty()) {
             this.item = ItemStack.item
@@ -24,6 +33,9 @@ export default class ItemStack {
         if (this.isSame(ItemStack)) {
             ItemStack.setAmount(this.addAmount(ItemStack.getAmount()))
 
+        }
+        if (this.getAmount() == 0) {
+            this.item = new classes.Empty()
         }
         this.update()
         ItemStack.update()
@@ -85,12 +97,10 @@ export default class ItemStack {
             this.subscribed[id].update()
         }
     }
-    /**
-     * returns new item! not ItemStack
-     */
+
     copy() {
-        let item = new classes[this.item.name](this.item.amount)
-        return item
+        return new ItemStack(this.item.name, this.item.amount)
+
     }
     save() {
         return this.item.save()
@@ -101,6 +111,7 @@ export default class ItemStack {
         for (const prop in obj) {
             this.item[prop] = obj[prop]
         }
+        this.item.name = getDeprecatedName(this.item.name)
         this.update()
     }
 }

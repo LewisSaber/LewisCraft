@@ -1,3 +1,12 @@
+export function getDeprecatedName(name) {
+    return DEPRECATED.get(name, name)
+}
+const DEPRECATED = {
+    "Sand": "sand"
+}
+
+
+
 
 export let classes = {}
 
@@ -70,18 +79,41 @@ classes.Stick = class Stick extends classes.Item {
 
 }
 
-classes.Stone = class Stone extends classes.Block {
+classes.stick = class stick extends classes.Item {
     constructor(amount) {
         super(amount)
     }
 
 }
 
-classes.Sand = class Sand extends classes.Block {
+classes.stone = class Stone extends classes.Block {
     constructor(amount) {
         super(amount)
     }
+
+}
+
+
+classes.sand = class sand extends classes.Block {
+    constructor(amount) {
+        super(amount)
+
+    }
     getRarity() {
         return 2
+    }
+}
+
+
+
+classes.logoak = class logoak extends classes.Block {
+    constructor(amount) {
+        super(amount)
+    }
+}
+
+classes.planksoak = class planksoak extends classes.Block {
+    constructor(amount) {
+        super(amount)
     }
 }

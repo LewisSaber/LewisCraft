@@ -48,11 +48,15 @@ export function mergeObject(original, pulling_from) {
         }
     return original
 }
-
+/** Reverses keys and items of  object */
 export function reverseObject(object) {
     let result = {}
     for (const key in object) {
         result[object[key]] = key
     }
     return result
+}
+
+export function getImg(img, extension = "png") {
+    return './src/assets/' + img + "." + extension
 }

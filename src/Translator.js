@@ -4,6 +4,8 @@ export default function TranslateName(name) {
 export function TranslateRarity(rarity = 0) {
     return RarityList.get(rarity, "Common")
 }
+
+
 const RarityList = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"]
 const TranslationTable = {}
 TranslationTable.EN = {
@@ -12,6 +14,8 @@ TranslationTable.EN = {
     "MOVE_LEFT": "Move Left",
     "MOVE_RIGHT": "Move Rigth",
     "OPEN_INVENTORY": "Open Inventory",
+    "logoak": "Oak Log",
+    "planksoak": "Oak Planks"
 }
 
 export function TranslateKeyCode(KeyCode) {
