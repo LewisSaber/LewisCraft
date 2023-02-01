@@ -64,7 +64,7 @@ export class Player extends Entity {
 
 
         let leftButtonIcons = [
-            "craftingTableFront", "CraftingTableTop"
+            "craftingtablefront"
         ]
         let leftButtonGuis = []
         let iter = 0
