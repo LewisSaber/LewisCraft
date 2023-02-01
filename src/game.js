@@ -6,7 +6,7 @@ import Cursor from "./cursor.js";
 import { Session } from "./Session.js";
 import OptionsController from "./Options.js";
 import Gui from "./gui/Gui.js";
-import { BackGround } from "./gui/background.js";
+import { BackGround } from "./gui/Background.js";
 "./Item.js";
 
 
@@ -40,7 +40,8 @@ export class Game {
         this.session = new Session(this)
 
 
-        this.mainGui = new Gui().setHeight(10).build()
+        this.mainGui = new Gui().setHeight(10).setFontSize(0.3).build()
+        this.mainGui.open()
         this.createMapGui()
 
         document.getElementById("body").appendChild(this.mainGui.getContainer())
@@ -56,7 +57,7 @@ export class Game {
 
 
         this.cursor = new Cursor(this)
-        this.mainGui.open()
+
         this.optionController = new OptionsController(this)
     }
 
@@ -143,9 +144,9 @@ export class Game {
 
         this.mapGui = new Gui(this)
             .setName("map")
-            .addBackground(new BackGround().setImg("./src/assets/background.png").setPosition(1.75, 1.2).setSize(9.5, 1.2).build(), { fromBottom: true })
+            .addComponent(new BackGround().setImg("./src/assets/background.png").setPosition(1.75, 1.2).setSize(9.5, 1.2).positionFromButtom(), "none")
 
-        this.mainGui.addGui(this.mapGui, "main")
+        this.mainGui.addComponent(this.mapGui, "main")
 
     }
     getCursor() {

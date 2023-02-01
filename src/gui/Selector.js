@@ -1,6 +1,7 @@
-import GUIComponent from "./GUIComponent.js"
+import Gui from "./Gui.js"
 
-export class Selector extends GUIComponent {
+
+export class Selector extends Gui {
     constructor() {
         super()
         this.options = []

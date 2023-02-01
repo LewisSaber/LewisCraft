@@ -12,24 +12,67 @@ export default class Gui {
         this.isOpen = false
         this.position = new Vector()
         this.components = []
-        this.backgrounds = []
-        this.internalGuis = []
-        this.activeGuis = {}
         this.queue = []
         this.z_layer_additional = 0
         this.z_layer_parental = 0
+        this.activeGuis = {}
+        this.positionalOptions = {
+            fromButtom: false,
+            fromRight: false
+        }
 
+    }
+    setBackGround(img) {
+        this.backgroundImg = img
+        return this
     }
     getName() {
         return this.name
+    }
+
+    getFontSize() {
+        return this.fontSize || this.parent.getFontSize()
     }
     setName(name) {
         this.name = name
         return this
     }
+
+    setFontSize(fontSize) {
+        this.fontSize = fontSize
+        if (this.isBuilt)
+            this.applyFontSize(this.getPixelSize())
+        return this
+    }
+    applyFontSize(pixelSize) {
+        this.container.style.fontSize = this.getFontSize() * (pixelSize.x)
+    }
+
     setPosition(x, y) {
         this.position = new Vector(x, y)
+        if (this.isBuilt)
+            this.resize()
         return this
+    }
+
+
+    setDecoration(decoration) {
+        if (this[`decoration${decoration}`] == undefined) {
+            console.warn("no decoration found with id", decoration, ". Setting decoration to 0")
+            decoration = 0
+        }
+        this.decoration = decoration
+        return this
+    }
+
+    setSize(x, y) {
+        this.size = new Vector(x, y)
+        return this
+    }
+
+    applyDecoration() {
+        if (this[`decoration${this.decoration}`])
+            this.container.applyStyle(this[`decoration${this.decoration}`](this.size.multiply(this.getPixelSize())))
     }
 
     setWidth(width) {
@@ -47,9 +90,11 @@ export default class Gui {
         this.size.y = height
         return this
     }
+
     getWindowSize() {
         return new Vector(window.innerWidth, window.innerHeight)
     }
+
     getChannel() {
         return this.channel
     }
@@ -91,100 +136,81 @@ export default class Gui {
         // this.size = windowSize
     }
     createContainer() {
-        this.container = document.createElement("div")
 
+        this.container = document.createElement("div")
         this.container.style.display = "none"
         this.container.style.position = "absolute"
         this.container.style.pointerEvents = "none"
         return this
     }
+
     attachContainer(container) {
         this.container.appendChild(container)
         return this
     }
+
     detachContainer(container) {
         this.container.removeChild(container)
     }
+
     getContainer() {
+
         return this.container
     }
 
     build() {
         this.computeSize()
         this.createContainer()
-        this.renderBackgrounds()
         this.applyZLayer()
+        if (this.backgroundImg)
+            this.getContainer().setBackgroundImage(this.backgroundImg)
         this.isBuilt = true
         for (let component of this.queue) {
-            if (component.component instanceof Gui) {
-                this.addGui(component.component, component.options)
-            }
-            else
-                this.addComponent(component.component, component.options)
+
+            this.addComponent(component.component, component.channel)
+
         }
         delete this.queue
+
         return this
     }
     open() {
-        if (this.parent)
-            this.parent.handleGuiOpen(this)
 
+        if (this.parent && this.parent.isOpen) {
+            if (this.getChannel() != "none")
+                this.parent.handleComponentOpen(this)
+        }
         this.container.style.display = "block"
         this.isOpen = true
-        return this
-    }
-    /**
-     * 
-     * @param {Background} background 
-     * @param {Object} options 
-     * @returns 
-     */
-    addBackground(background, options = {}) {
-        background.setParent(this)
-
-        this.backgrounds.push({ background: background, options: options })
-        if (this.isBuilt)
-            this.renderBackground({ background: background, options: options })
-        return this
-    }
-    renderBackground(background) {
-
-        if (background.options.fromBottom) {
-
-            background.background.position.y = this.size.y - background.background.position.y
-
-        }
-        if (background.options.fromRight) {
-            background.background.position.x = this.size.x - background.background.position.x
-
-        }
-        if (!background.background.isBuilt)
-            background.background.build()
-        background.background.resize()
-        this.attachContainer(background.background.getContainer())
-    }
-    renderBackgrounds() {
-        for (const background of this.backgrounds) {
-            this.renderBackground(background)
-        }
 
     }
+
     resize() {
-        this.container.setSize(this.size.multiply(this.getPixelSize()))
-        this.container.setPosition(this.position.multiply(this.getPixelSize()))
-        for (const background of this.backgrounds) {
-            background.background.resize()
+        let pixelSize = this.getPixelSize()
+        this.container.setSize(this.size.multiply(pixelSize))
+        let position = this.position.copy()
+        if (this.parent) {
 
 
+            if (this.positionalOptions.fromButtom) {
+                position.y = this.parent.size.y - this.position.y
+            }
+            if (this.positionalOptions.fromRight) {
+                position.x = this.parent.size.x - position.x
+            }
+
         }
-        for (let component in this.components) {
-            this.components[component].resize()
-        }
-        for (let channel in this.internalGuis) {
-            for (let gui in this.internalGuis[channel]) {
-                this.internalGuis[channel][gui].resize()
+        this.container.setPosition(position.multiply(pixelSize))
+
+
+        for (let channel in this.components) {
+            for (let component in this.components[channel]) {
+
+                this.components[channel][component].resize()
             }
         }
+        this.applyDecoration()
+        this.applyFontSize(pixelSize)
     }
 
     close() {
@@ -192,32 +218,52 @@ export default class Gui {
         this.isOpen = false
         return this
     }
-    handleGuiOpen(gui) {
-        this.activeGuis[gui.getChannel()] = gui.getName()
-        for (const internalGui in this.internalGuis[gui.getChannel()]) {
-            this.internalGuis[gui.getChannel()][internalGui].close()
+    handleComponentOpen(component) {
+        this.activeGuis[component.getChannel()] = component.getName()
+        for (const component_in in this.components[component.getChannel()]) {
+            // console.log(component_in)
+            this.components[component.getChannel()][component_in].close()
         }
+
     }
-    addComponent(component, options = {}) {
+
+    positionFromButtom() {
+        this.positionalOptions.fromButtom = true
+        return this
+    }
+
+    positionFromRight() {
+        this.positionalOptions.fromRight = true
+        return this
+    }
+
+    addComponent(component, channel = "none") {
         if (!this.isBuilt) {
-            console.log("pushing", component)
+
             this.queue.push({
                 component: component,
-                options: options
+                channel: channel
             })
             return this
         }
-        console.log(component)
-        component.setParent(this).setParentalZLayer(this.getZLayer() + 1)
-        if (component.isBuilt == false)
-            component.build()
-        this.components.push(component)
-        if (options.fromBottom)
-            component.position.y = this.size.y - component.position.y
-        if (options.fromRight)
-            component.position.x = this.size.x - component.position.x
+        component.setId().setChannel(channel).setParrent(this).setParentalZLayer(this.getZLayer() + 1).build()
+        let shouldOpen = false
+        if (this.components[channel] == undefined) {
+            shouldOpen = true
+            this.components[channel] = {}
+
+        }
+        if (channel == "none") {
+            shouldOpen = true
+        }
+        this.components[channel][component.getId()] = component
+
+
 
         component.resize()
+
+        if (shouldOpen)
+            component.open()
         this.attachContainer(component.getContainer())
         return this
     }
@@ -236,27 +282,32 @@ export default class Gui {
         this.parent = parent
         return this
     }
+
     getPixelSize() {
         return this.pixelSize || this.parent.getPixelSize()
     }
+
     getActiveGui(channel) {
         return this.activeGuis.get(channel, "none")
     }
+
     setParentalZLayer(layer) {
         this.z_layer_parental = layer
         if (this.isBuilt) {
-            this.applyZlayer()
+            this.applyZLayer()
         }
         return this
     }
+
     setZLayer(layer) {
         this.z_layer_additional = layer
         if (this.isBuilt) {
-            this.applyZlayer()
+            this.applyZLayer()
         }
         return this
 
     }
+
     applyZLayer() {
         this.getContainer().setZLayer(this.z_layer_parental + this.z_layer_additional)
         return this
@@ -266,28 +317,6 @@ export default class Gui {
     }
 
 
-    addGui(gui, channel = "none") {
-        if (!this.isBuilt) {
-            this.queue.push({
-                component: gui,
-                options: channel
-            })
-            return this
-        }
-        let shouldOpen = false
-        gui.setId().setChannel(channel).setParrent(this).setParentalZLayer(this.getZLayer() + 1).build()
-        if (this.internalGuis[channel] == undefined) {
-            shouldOpen = true
-            this.internalGuis[channel] = {}
-            console.log("should open", gui.getName())
-        }
-        this.internalGuis[channel][gui.getId()] = gui
-        gui.resize()
-        this.attachContainer(gui.getContainer())
-        if (shouldOpen)
-            gui.open()
-        return this
-    }
 
 }
 

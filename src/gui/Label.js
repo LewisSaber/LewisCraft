@@ -1,6 +1,7 @@
-import GUIComponent from "./GUIComponent.js"
+import Gui from "./Gui.js"
 
-export class Label extends GUIComponent {
+
+export class Label extends Gui {
     constructor() {
         super()
         this.text = ""
@@ -37,8 +38,8 @@ export class Label extends GUIComponent {
 
     }
     resize() {
+        super.resize()
         let pixelSize = this.getPixelSize()
-        this.container.setPosition(this.position.multiply(pixelSize))
         this.container.style.fontSize = this.fontSize * (pixelSize.x)
     }
     build() {

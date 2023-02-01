@@ -33,6 +33,9 @@ export class Vector {
     toString() {
         return `(${this.x}, ${this.y})`
     }
+    copy() {
+        return new Vector(this.x, this.y)
+    }
 }
 
 

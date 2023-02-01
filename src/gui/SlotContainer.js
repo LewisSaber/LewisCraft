@@ -1,12 +1,12 @@
-import GUIComponent from "./GUIComponent.js"
 import { Vector } from "./../math.js"
+import Gui from "./Gui.js"
 
-export class SlotCointainer extends GUIComponent {
+export class SlotCointainer extends Gui {
     constructor() {
         super()
         /**  @type {Slot[]} */
         this.slots = []
-
+        this.fontSize = .25
     }
 
     getSlot(i) {
@@ -46,7 +46,7 @@ export class SlotCointainer extends GUIComponent {
         return this
     }
     resize() {
-        this.container.setPosition(this.position.multiply(this.parent.getPixelSize()))
+        super.resize()
         let widthsum = 0
         for (let i = 0; i < this.size.x; i++) {
             widthsum += this.slots[i].size.x

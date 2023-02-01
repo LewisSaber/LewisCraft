@@ -29,7 +29,7 @@ export class CraftingTable {
     }
     createGui() {
         let background = new BackGround().setImg(getImg("craftingarrow")).setSize(1, 1).setPosition(2.9, 0)
-        this.gui = new Gui().setName("craftingTable").addBackground(background)
+        this.gui = new Gui().setName("craftingTable").addComponent(background)
         this.outputSlotContainer = new SlotCointainer().setSize(1, 1).setPosition(3, 1)
         this.SlotContainer = new SlotCointainer().setSize(3, 3)
         this.gui.addComponent(this.SlotContainer).addComponent(this.outputSlotContainer)

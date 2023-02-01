@@ -41,48 +41,70 @@ export class Player extends Entity {
     createHotbar() {
 
 
-        this.hotbar = new SlotCointainer().setSize(9, 1)
+        this.hotbar = new SlotCointainer().setSize(9, 1).positionFromButtom()
         this.hotbar.selectedSlot = 1
         for (let i = 27; i < 36; i++) {
             let slot = new Slot().setItem(this.inventory.getItem(i)).build({ cancelPointerEvents: true })
             this.hotbar.addSlot(slot)
         }
-        this.hotbar.build()
+        this.hotbar
 
         this.hotbar.setPosition(2.1, 1.1)
-        this.getGame().mapGui.addComponent(this.hotbar, { fromBottom: true })
+        this.getGame().mapGui.addComponent(this.hotbar)
         this.hotbar.getSlot(0).select()
 
     }
     createInventoryGui() {
         this.InventorySlots = this.createInventorySlots()
-        let InventoryContainer = new SlotCointainer().setSize(9, 4).addSlotArray(this.InventorySlots).setPosition(.25, 3.9).build()
+        let InventoryContainer = new SlotCointainer().setSize(9, 4).addSlotArray(this.InventorySlots).setPosition(.25, 3.9)
         this.InventoryGui = new Gui(this.map.game)
             .setName("inventroy")
             .setPosition(2, 0.6)
-            .addBackground(new BackGround().setImg("./src/assets/background.png").setSize(12, 8).build())
-        // .addBackground(, , )
+            .addComponent(new BackGround().setImg("./src/assets/background.png").setSize(12, 8))
 
-        let leftButtons = [
-            new Button().setBackground(getImg("background")).setIcon(getImg("craftingTableFront")).setSize(1, 1)
+
+        let leftButtonIcons = [
+            "craftingTableFront", "CraftingTableTop"
         ]
+        let leftButtonGuis = []
         let iter = 0
-        for (const button of leftButtons) {
-            button.setPosition(-1, 1.2 * iter)
-            this.InventoryGui.addComponent(button)
+        for (const Icon of leftButtonIcons) {
+            let y = 0.25 + 1.2 * iter
+            let button = new Button()
+            button.setPosition(-1, y)
+                .setZLayer(-2)
+                .setSize(1.26, 1)
+                .setBackGround(getImg("buttonleft"))
+                .setIcon(getImg(Icon))
+                .setDecoration("NO")
+
+
+            button.close = () => {
+                button.setZLayer(-2).setPosition(-1, y)
+            }
+            button.addAction(() => { button.open(); button.setPosition(-1.1, y).setZLayer(2) })
+            if (iter == 0) {
+                button.setPosition(-1.1, y).setZLayer(2)
+            }
+            this.InventoryGui.addComponent(button, "leftButton")
+
             iter++
         }
-        console.log(this.InventoryGui.queue)
-        this.getGame().mainGui.addGui(this.InventoryGui, "main")
+
+
+
+
+
+        this.getGame().mainGui.addComponent(this.InventoryGui, "main")
         this.InventoryGui.addComponent(InventoryContainer)
 
         this.craftingTableGui = new Gui()
             .setName("crafting table")
-        //.setPosition(2, 0.6)
-        this.InventoryGui.addGui(this.craftingTableGui, "main")
+
+        this.InventoryGui.addComponent(this.craftingTableGui, "main")
 
         this.craftingTable = new CraftingTable()
-        this.craftingTableGui.addGui(this.craftingTable.getContainer().setPosition(0.25, 0.2))
+        this.craftingTableGui.addComponent(this.craftingTable.getContainer().setPosition(0.25, 0.2))
 
 
     }

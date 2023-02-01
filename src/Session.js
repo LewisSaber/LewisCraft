@@ -10,11 +10,11 @@ export class Session {
 
         }
         this.load()
-        let len = Object.keys(this.data.accounts).length
+        // let len = Object.keys(this.data.accounts).length
         if (this.data.lastAccount == "") {
 
             let nick = prompt("Select Nickname") || "Steve"
-            this.data.lastAccount = len
+            this.data.lastAccount = nick
             this.data.accounts[this.data.lastAccount] = {}
             this.data.accounts[this.data.lastAccount].nick = nick
 
