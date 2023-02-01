@@ -20,6 +20,7 @@ export default class Gui {
             fromButtom: false,
             fromRight: false
         }
+        this.isBuilt = false
 
     }
     setBackGround(img) {
@@ -45,7 +46,7 @@ export default class Gui {
         return this
     }
     applyFontSize(pixelSize) {
-        this.container.style.fontSize = this.getFontSize() * (pixelSize.x)
+        this.container.style.fontSize = this.getFontSize() * (Math.min(pixelSize.x, pixelSize.y))
     }
 
     setPosition(x, y) {

@@ -36,8 +36,10 @@ export class Button extends Gui {
     setText(text, fontSize = this.fontSize, color = "black", x = 0, y = 0) {
         if (!this.textLabel) {
             this.textLabel = new Label()
+            this.addComponent(this.textLabel)
+
         }
-        this.textLabel = new Label().setText(text).setColor(color).setFontSize(this.fontSize)
+        this.textLabel.setText(text).setColor(color).setFontSize(fontSize)
         if (this.textLabel.position.x != x || this.textLabel.position.y != y)
             this.textLabel.setPosition(x, y)
         return this
