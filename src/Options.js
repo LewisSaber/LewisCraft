@@ -1,5 +1,5 @@
 import { Game } from "./game.js"
-import { BackGround } from "./gui/background.js"
+import { BackGround } from "./gui/Background.js"
 import { Button } from "./gui/Button.js"
 import Gui from "./gui/Gui.js"
 import { Label } from "./gui/Label.js"

@@ -1,4 +1,4 @@
-import { BackGround } from "./gui/background.js";
+import { BackGround } from "./gui/Background.js";
 import Gui from "./gui/Gui.js";
 import { CRAFTING_RECIPE_MAP } from "./Recipes.js";
 import { Slot } from "./gui/Slot.js";

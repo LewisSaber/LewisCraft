@@ -3,7 +3,7 @@ import { Vector } from "./math.js";
 import { KEYBIND_VALUES } from "./constants.js";
 import Gui from "./gui/Gui.js";
 import ItemStack from "./ItemStack.js";
-import { BackGround } from "./gui/background.js";
+import { BackGround } from "./gui/Background.js";
 import { Slot } from "./gui/Slot.js";
 import { SlotCointainer } from "./gui/SlotContainer.js";
 import { getImg, mergeObject, reverseObject } from "./utility.js";

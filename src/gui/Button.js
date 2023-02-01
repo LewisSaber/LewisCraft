@@ -1,5 +1,5 @@
 import { Vector } from "../math.js"
-import { BackGround } from "./background.js"
+import { BackGround } from "./Background.js"
 import Gui from "./Gui.js"
 import { Label } from "./Label.js"
 
