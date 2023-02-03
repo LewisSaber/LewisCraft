@@ -20,7 +20,9 @@ export class CraftingTable {
         this.outputSlot = new OutputSlot().setPosition(3, 1).setItem(this.output)
         for (let i = 0; i < 9; i++) {
             this.inputInventory.getItem(i).subscribeSlotToUpdate(this)
-            let slot = new Slot().setItem(this.inputInventory.getItem(i)).build()
+            let slot = new Slot()
+                .setItem(this.inputInventory.getItem(i))
+                .build()
             this.SlotContainer.addSlot(slot)
         }
         this.outputSlotContainer.addSlot(this.outputSlot)

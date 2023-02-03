@@ -88,4 +88,13 @@ export class Chunk {
         this.splitLayers()
         //this.renderToBuffer()
     }
+    getBlock(x, y) {
+        let block = "air"
+        for (let layer in this.layers) {
+            if (this.layers[layer][y][x] != "air") {
+                block = this.layers[layer][y][x]
+            }
+        }
+        return block
+    }
 }

@@ -15,7 +15,8 @@ TranslationTable.EN = {
     "MOVE_RIGHT": "Move Rigth",
     "OPEN_INVENTORY": "Open Inventory",
     "logoak": "Oak Log",
-    "planksoak": "Oak Planks"
+    "planksoak": "Oak Planks",
+    'smallbackpack': "Small Backpack"
 }
 
 export function TranslateKeyCode(KeyCode) {

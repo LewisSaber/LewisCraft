@@ -35,6 +35,7 @@ canvas {
     opacity: 1;
     z-index: 1300;
     box-shadow: none; */
+    border-radius: 1%;
     font-size: 2.6vh;
     padding: 1.2vh 1.4vh;
     background: rgb(13, 0, 46);

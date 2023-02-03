@@ -80,7 +80,7 @@ window.addEventListener("resize", function () {
 window.addEventListener("mousedown", (e) => { window.g = e })
 
 
-function give(item, quantity) {
+function give(item, quantity = 1) {
     let itemS = new ItemStack(item, quantity)
     window.game.getPlayer().inventory.add(itemS)
 }

@@ -9,7 +9,7 @@ export default class OutputSlot extends Slot {
 
     onLeftClick() {
         if (window.game.getCursor().getItem().canAdd(this.getItem())) {
-            window.game.getCursor().add(this.getItem())
+            window.game.getCursor().getSlot().add(this.getItem())
         }
 
         // let toPlace, toGet

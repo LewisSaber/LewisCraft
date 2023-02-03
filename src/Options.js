@@ -40,7 +40,9 @@ export default class OptionsController {
             .addAction(() => { this.mainGui.open() })
             .positionFromButtom()
             .positionFromRight()
+            .addTooltipText("shit")
             .setIcon("./src/assets/settings.png")
+
         this.game.mapGui.addComponent(settingsButton)
     }
     createGeneralTab() {

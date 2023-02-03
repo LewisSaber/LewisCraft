@@ -10,7 +10,6 @@ export class Button extends Gui {
         this.actions = {}
         this.decoration = 0
         this.text = ""
-        this.fontSize = 1
     }
 
     decoration0(size) {
@@ -60,7 +59,8 @@ export class Button extends Gui {
         this.container.disableContextMenu()
         return this
     }
-    setIcon(icon, x = 0.15, y = 0.15, width = -1, height = -1) {
+    setIcon(icon, x = 0.15, y = 0.15, width = -1, height = -1, asymethric = false) {
+
         if (width == -1) {
 
             width = this.size.x - 2 * x
@@ -69,13 +69,12 @@ export class Button extends Gui {
         if (height == -1) {
             height = this.size.y - 2 * y
         }
-
-        if (height < width) {
-            width = height
-        }
-        else
-            height = width
-        console.log(x, y, height, width)
+        if (asymethric == false)
+            if (height < width) {
+                width = height
+            }
+            else
+                height = width
         let icon_component = new BackGround().setSize(width, height).setPosition(x, y).setName("icon").setBackGround(icon)
         this.addComponent(icon_component)
         return this

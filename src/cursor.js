@@ -2,6 +2,7 @@
 import { Slot } from "./gui/Slot.js";
 import ItemStack from "./ItemStack.js";
 import { Vector } from "./math.js"
+import { Inventory } from "./player.js";
 import Tooltip from "./Tooltip.js";
 
 
@@ -17,7 +18,7 @@ export default class Cursor {
         window.addEventListener("mousemove", e => this.onMouseMove(e));
         window.addEventListener("keydown", (evt) => { this.onKeyDown(evt) })
         window.addEventListener("keyup", (evt) => { this.onKeyUp(evt) })
-        this.slot.getItem().subscribeSlotToUpdate({ update: () => this.makeToolTip() })
+        this.slot.getItem().subscribeSlotToUpdate({ update: () => this.makeTooltip() })
         this.createTag()
         this.container.appendChild(this.slot.getContainer())
         this.container.appendChild(this.toolTip.getContainer())
@@ -31,6 +32,11 @@ export default class Cursor {
         this.position.y = evt.clientY
 
     }
+
+    getTooltip() {
+        return this.toolTip
+    }
+
     resize() {
         this.slot.resize()
     }
@@ -45,10 +51,10 @@ export default class Cursor {
 
 
     }
-    add(ItemStack) {
-        return this.slot.add(ItemStack)
+    // add(ItemStack) {
+    //     return this.slot.add(ItemStack)
 
-    }
+    // }
     attachContainer() {
         document.getElementById("body").appendChild(this.container)
     }
@@ -58,44 +64,69 @@ export default class Cursor {
     isEmpty() {
         return this.slot.isEmpty()
     }
+    getSlot() {
+        return this.slot
+    }
     getItem() {
         return this.slot.getItem()
     }
     getUpdateId() {
         return this.slot.getUpdateId()
     }
-    addItem(ItemStack) {
-        this.slot.setItem(ItemStack)
-    }
-    makeToolTip(ItemStack) {
+    // addItem(ItemStack) {
+    //     this.slot.setItem(ItemStack)
+    // }
+    makeTooltip(slot, isText) {
+
+
+
         let options = {
             shift: this.keyStates.get("ShiftLeft", 0)
         }
-        this.toolTip.makeItemToolTip(ItemStack, options)
-
-        if (ItemStack == undefined)
-            ItemStack = this.toolTip.getItem()
-
-        if (this.isEmpty() && !ItemStack.isEmpty()) {
-            this.toolTip.show()
+        isText ??= this.toolTip.isText
+        console.log(isText)
+        if (isText) {
+            this.toolTip.makeTextTooltip(slot, options)
+            if (this.isEmpty()) {
+                this.toolTip.show()
+            }
+            else
+                this.toolTip.hide()
         }
         else {
-            this.toolTip.hide()
+            this.toolTip.makeItemTooltip(slot, options)
+
+            if (slot == undefined)
+                slot = this.toolTip.getItem()
+
+            if (this.isEmpty() && !slot.isEmpty()) {
+                this.toolTip.show()
+            }
+            else {
+                this.toolTip.hide()
+            }
         }
     }
-    ClearToolTip() {
+
+    clearTooltip() {
         this.toolTip.clear()
     }
     onKeyDown({ code }) {
 
         this.keyStates[code] = 1
         if (code == "ShiftLeft")
-            this.makeToolTip()
+            this.makeTooltip()
     }
     onKeyUp({ code }) {
 
         this.keyStates[code] = 0
         if (code == "ShiftLeft")
-            this.makeToolTip()
+            this.makeTooltip()
+    }
+    onRemoval(oldItem) {
+        this.slot.onRemoval(oldItem)
+    }
+    onPlacing() {
+        this.slot.onPlacing()
     }
 }

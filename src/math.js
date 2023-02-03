@@ -6,7 +6,11 @@ export class Vector {
         this.x = x;
         this.y = y;
     }
-
+    shiftInPlace() {
+        this.x >>= 0
+        this.y >>= 0
+        return this
+    }
     scale(factor) {
         let result = new Vector(this.x, this.y)
         result.x *= factor
@@ -16,6 +20,12 @@ export class Vector {
     add_vec(vector) {
         return new Vector(this.x + vector.x, this.y + vector.y)
 
+    }
+    sub_vec(vector) {
+        return new Vector(this.x - vector.x, this.y - vector.y)
+    }
+    div_vec(vector) {
+        return new Vector(this.x / vector.x, this.y / vector.y)
     }
     vectorize() {
         let distance = this.x && this.y ? Math.abs(this.x / 2) + Math.abs(this.y / 2) : 0

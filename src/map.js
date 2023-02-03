@@ -25,14 +25,35 @@ export class Map {
         this.zoomScale = 1
         this.chunkSize = 10
         this.renderedChunks = 0
-        this.renderDistance = new Vector(1, 1)
+        this.renderDistance = new Vector(2, 1)
 
 
         this.createSprites()
-        this.splitLayers()
         this.splitToChunks()
+        this.game.canvasElm.addEventListener("mousedown", e => this.onMapClick(e));
 
+    }
+    onMapClick({ clientX, clientY }) {
+        console.log(clientX, clientY)
+        let pixelPerBlock = this.game.canvasElm.height / this.getBlocksHeight()
+        let clickCoordinates = new Vector(clientX, clientY).scale(1 / pixelPerBlock).add_vec(this.player.coordinates.sub_vec(this.player.position)).shiftInPlace()
+        console.log("clicked at", clickCoordinates.toString())
+        console.log("block", this.getBlock(clickCoordinates.x, clickCoordinates.y))
+    }
+    getBlock(x, y) {
+        let block = "air"
+        if (x >= 0 && y >= 0) {
 
+            let chunkX = x / this.chunkSize >> 0
+            let chunkY = y / this.chunkSize >> 0
+            x %= this.chunkSize
+            y %= this.chunkSize
+            let chunk = this.chunks.get(chunkY, []).get(chunkX, undefined)
+            if (chunk) {
+                block = chunk.getBlock(x, y)
+            }
+        }
+        return block
     }
     getRenderDistance() {
         return this.renderDistance
@@ -47,21 +68,7 @@ export class Map {
 
         return Object.keys(this.layers).length
     }
-    splitLayers() {
-        this.layers = {
-            0: createEmptyArray(this.getWidth(), this.getHeight()),
-            1: createEmptyArray(this.getWidth(), this.getHeight()),
 
-        }
-
-
-        for (let i = 0; i < this.map.length; i++) {
-            for (let j = 0; j < this.map[i].length; j++) {
-                this.layers[0][i][j] = this.map[i][j][1]
-                this.layers[1][i][j] = this.map[i][j][0]
-            }
-        }
-    }
     splitToChunks() {
 
         let chunksize = this.chunkSize
@@ -84,15 +91,15 @@ export class Map {
             }
         }
     }
-    resize(x, y) {
-        let unscaledHeight = 10
-        this.HeightInBlocks = 10//this.getHeight()
+    resize(x = this.game.canvasElm.width, y = this.game.canvasElm.height) {
+        // let unscaledHeight = 15
+        this.HeightInBlocks = 10
         this.WidthInBlocks = x / (y / this.HeightInBlocks)
         // if (this.WidthInBlocks < this.getWidth()) {
         //     this.WidthInBlocks = 30//this.getWidth()
         //     this.HeightInBlocks = this.WidthInBlocks * y / x
         // }
-        this.zoomScale = this.HeightInBlocks / unscaledHeight
+        // this.zoomScale = this.HeightInBlocks / unscaledHeight
 
     }
     /**
@@ -100,13 +107,13 @@ export class Map {
      */
     getBlocksWidth() {
 
-        return this.WidthInBlocks /// this.getZoom()
+        return this.WidthInBlocks
     }
     /**
      * get height of visible map(in blocks)
      */
     getBlocksHeight() {
-        return this.HeightInBlocks /// this.getZoom()
+        return this.HeightInBlocks
     }
     createSprites() {
         this.sprites = {}
@@ -126,24 +133,22 @@ export class Map {
         }
     }
     addZoom(zoom) {
-
+        return
         this.zoom += zoom
     }
     setZoom(zoom) {
+        return
         this.zoom = zoom
+        // this.resize()
     }
     getZoom() {
-        return this.zoom * this.zoomScale
+        return 1 // this.zoom// * this.zoomScale
     }
     reRender() {
 
 
         // this.renderToBuffer()
     }
-    test() {
-
-    }
-
 
     /**
      * 
@@ -153,7 +158,7 @@ export class Map {
         window.game.setBuffer(this.finalBuffer);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT)
 
-        let zoom = this.getZoom()
+        let zoom = 1// this.getZoom()
 
         let options = { scalex: zoom, scaley: zoom }
 

@@ -21,7 +21,7 @@ export default class Gui {
             fromRight: false
         }
         this.isBuilt = false
-
+        this.isDraggable = false
     }
     setBackGround(img) {
         this.backgroundImg = img
@@ -52,10 +52,13 @@ export default class Gui {
     setPosition(x, y) {
         this.position = new Vector(x, y)
         if (this.isBuilt)
-            this.resize()
+            this.resizePosition()
         return this
     }
-
+    setDraggable() {
+        this.isDraggable = true
+        return this
+    }
 
     setDecoration(decoration) {
         if (this[`decoration${decoration}`] == undefined) {
@@ -141,7 +144,8 @@ export default class Gui {
         this.container = document.createElement("div")
         this.container.style.display = "none"
         this.container.style.position = "absolute"
-        this.container.style.pointerEvents = "none"
+        this.container.style.pointerEvents = true ? "all" : "none"
+        this.container.disableContextMenu()
         return this
     }
 
@@ -158,10 +162,17 @@ export default class Gui {
 
         return this.container
     }
+    addListeners() {
+        this.container.addEventListener("mouseenter", (evt) => { this.onmouseenter(evt) })
+        this.container.addEventListener("mouseleave", (evt) => { this.onmouseleave(evt) })
+        this.container.addEventListener("mousedown", (evt) => { this.onmousedown(evt) })
+        this.container.addEventListener("mouseup", (evt) => { this.onmouseup(evt) })
 
+    }
     build() {
         this.computeSize()
         this.createContainer()
+        this.addListeners()
         this.applyZLayer()
         if (this.backgroundImg)
             this.getContainer().setBackgroundImage(this.backgroundImg)
@@ -185,10 +196,7 @@ export default class Gui {
         this.isOpen = true
 
     }
-
-    resize() {
-        let pixelSize = this.getPixelSize()
-        this.container.setSize(this.size.multiply(pixelSize))
+    resizePosition(pixelSize = this.getPixelSize()) {
         let position = this.position.copy()
         if (this.parent) {
 
@@ -202,6 +210,12 @@ export default class Gui {
 
         }
         this.container.setPosition(position.multiply(pixelSize))
+    }
+
+    resize() {
+        let pixelSize = this.getPixelSize()
+        this.container.setSize(this.size.multiply(pixelSize))
+        this.resizePosition()
 
 
         for (let channel in this.components) {
@@ -247,7 +261,10 @@ export default class Gui {
             })
             return this
         }
-        component.setId().setChannel(channel).setParrent(this).setParentalZLayer(this.getZLayer() + 1).build()
+
+        component.setId().setChannel(channel).setParrent(this).setParentalZLayer(this.getZLayer() + 1)
+        if (component.isBuilt == false)
+            component.build()
         let shouldOpen = false
         if (this.components[channel] == undefined) {
             shouldOpen = true
@@ -268,17 +285,29 @@ export default class Gui {
         this.attachContainer(component.getContainer())
         return this
     }
+
+    removeComponent(component) {
+        if (component.isBuilt) {
+
+            delete this.components[component.getChannel()][component.getId()]
+            this.detachContainer(component.getContainer())
+        }
+    }
+
     setChannel(channel) {
         this.channel = channel
         return this
     }
+
     setId() {
         this.id = getUniqueIdentificator()
         return this
     }
+
     getId() {
         return this.id
     }
+
     setParrent(parent) {
         this.parent = parent
         return this
@@ -316,9 +345,45 @@ export default class Gui {
     getZLayer() {
         return this.z_layer_parental + this.z_layer_additional
     }
+    addTooltipText(text) {
+        this.tooltip = () => text
+        return this
+    }
+    addTooltipFunction(func) {
+        this.tooltip = func
+        return this
+    }
+    onmouseenter(evt) {
+        if (this.tooltip) {
+            window.game.getCursor().makeTooltip(this.tooltip, true)
+        }
+    }
+    onmouseleave(evt) {
+        if (this.tooltip) {
+            window.game.getCursor().clearTooltip()
+        }
+    }
+    drag(evt) {
+        let newMousePos = new Vector(evt.clientX, evt.clientY)
+        let newPos = this.position.add_vec(newMousePos.sub_vec(this.mousePos).div_vec(this.getPixelSize()))
+        this.setPosition(newPos.x, newPos.y)
+        this.mousePos = newMousePos
+    }
 
-
-
+    onmousedown(evt) {
+        if (this.isDraggable) {
+            evt.preventDefault()
+            this.drag_func_listener = this.drag.bind(this)
+            this.mousePos = new Vector(evt.clientX, evt.clientY)
+            this.container.addEventListener("mousemove", this.drag_func_listener)
+        }
+    }
+    onmouseup(evt) {
+        if (this.isDraggable) {
+            this.container.removeEventListener("mousemove", this.drag_func_listener)
+            delete this.mousePos
+        }
+    }
 }
 
 

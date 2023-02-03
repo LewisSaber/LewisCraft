@@ -7,6 +7,7 @@ import { Session } from "./Session.js";
 import OptionsController from "./Options.js";
 import Gui from "./gui/Gui.js";
 import { BackGround } from "./gui/Background.js";
+import { getImg } from "./utility.js";
 "./Item.js";
 
 
@@ -20,6 +21,7 @@ export function loop(time) {
 export class Game {
     constructor() {
         this.canvasElm = document.createElement("canvas")
+        this.canvasElm.disableContextMenu()
         this.canvasElm.width = 800
         this.canvasElm.height = 600
         this.options = {}
@@ -40,7 +42,7 @@ export class Game {
         this.session = new Session(this)
 
 
-        this.mainGui = new Gui().setHeight(10).setFontSize(0.3).build()
+        this.mainGui = new Gui().setHeight(12).setFontSize(0.3).build()
         this.mainGui.open()
         this.createMapGui()
 
@@ -48,13 +50,9 @@ export class Game {
 
         this.map = new Map(this.gl, vs, fs, this)
 
-
         this.lastFrame = 0
         this.lastSecond = 0
         this.lastTick = 0
-
-
-
 
         this.cursor = new Cursor(this)
 

@@ -1,5 +1,5 @@
 import { classes, getDeprecatedName } from "./Item.js"
-import { getUniqueIdentificator } from "./utility.js"
+import { getUniqueIdentificator, mergeObject } from "./utility.js"
 
 
 export default class ItemStack {
@@ -99,19 +99,27 @@ export default class ItemStack {
     }
 
     copy() {
-        return new ItemStack(this.item.name, this.item.amount)
-
+        let item = new ItemStack(this.item.name, this.item.amount)
+        item.item.onCopy(this.item)
+        return item
     }
     save() {
         return this.item.save()
     }
     load(obj) {
-
+        obj.name = getDeprecatedName(obj.name)
         this.item = new classes[obj.name](obj.amount)
         for (const prop in obj) {
-            this.item[prop] = obj[prop]
+            if (obj[prop] instanceof Object) {
+                this.item.load(prop, obj[prop])
+            }
+            else
+                this.item[prop] = obj[prop]
         }
-        this.item.name = getDeprecatedName(this.item.name)
+
         this.update()
+    }
+    getGui() {
+        return this.item.getGui()
     }
 }

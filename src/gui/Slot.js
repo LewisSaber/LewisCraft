@@ -14,9 +14,19 @@ export class Slot {
             "left": {},
             "right": {}
         }
+        this.filterFunction = () => { return true }
+        this.additionalInfo = ""
+    }
+    setAdditionalInfo(info) {
+        this.additionalInfo = info
+        return this
     }
     setSize(vector) {
         this.size = vector
+        return this
+    }
+    setFilter(func) {
+        this.filterFunction = func
         return this
     }
     applyDecoration() {
@@ -36,6 +46,7 @@ export class Slot {
     decoration0(size) {
 
         return {
+            "box-shadow": 'rgba(0, 0, 0, 0.24) -2px -3px 0px',
             border: `inset ${size.x * 0.05}px #5f5f5f`,
             "--size": `${size.x * 0.9}px`,
             width: `var(--size)`,
@@ -68,10 +79,13 @@ export class Slot {
         /**  @type {ItemStack} */
         this.item = ItemStack
         this.subscribingId = this.item.subscribeSlotToUpdate(this)
+        this.onPlacing()
         return this
     }
     add(ItemStack) {
-        return this.item.add(ItemStack)
+        if (this.filterFunction(ItemStack))
+            return this.item.add(ItemStack)
+        return ItemStack
 
     }
     setDecoration(decoration) {
@@ -180,28 +194,40 @@ export class Slot {
         return this.subscribingId
     }
     onLeftClick() {
+        if (window.game.cursor.isEmpty() && this.isEmpty())
+            return
         let toPlace, toGet
         if (window.game.cursor.isEmpty()) {
-            toPlace = window.game.cursor
+            toPlace = window.game.cursor.getSlot()
             toGet = this
         }
         else {
             toPlace = this
-            toGet = window.game.cursor
+            toGet = window.game.cursor.getSlot()
 
         }
         toPlace.add(toGet.getItem())
+        if (toGet.isEmpty()) {
+            toGet.onRemoval(toPlace)
+        }
+        toPlace.onPlacing()
+    }
+    onRemoval() {
+        //console.log("removing", this.item)
+    }
+    onPlacing() {
+        // console.log("placing", this.item)
     }
     onRightClick() {
         let one = false
         let toPlace, toGet
         if (window.game.cursor.isEmpty()) {
-            toPlace = window.game.cursor
+            toPlace = window.game.cursor.getSlot()
             toGet = this
         }
         else {
             toPlace = this
-            toGet = window.game.cursor
+            toGet = window.game.cursor.getSlot()
             one = true
 
         }
@@ -235,16 +261,27 @@ export class Slot {
     }
     onMouseEnter(event) {
         this.select()
-        window.game.cursor.makeToolTip(this.getTooltipItem(), event)
+        window.game.cursor.makeTooltip(this)
     }
     unselect() {
         this.isSelected = false
         this.applyDecoration()
     }
     onMouseLeave() {
+        window.game.getCursor().getTooltip().setClearingInterval(setTimeout(() => { window.game.getCursor().getTooltip().clear() }, 100))
         this.unselect()
+
     }
     getItem() {
         return this.item
+    }
+    getAdditionalInfo() {
+        return this.additionalInfo ? this.additionalInfo + "<br>" : ""
+    }
+    show() {
+        this.container.style.visibility = "visible"
+    }
+    hide() {
+        this.container.style.visibility = "hidden"
     }
 }
