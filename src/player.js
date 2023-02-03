@@ -216,7 +216,7 @@ export class Player extends Entity {
                 gui: this.backpacksGui
             },
             {
-                icon: "gearGT",
+                icon: "gearGt",
                 gui: this.machinesGui
             }
 

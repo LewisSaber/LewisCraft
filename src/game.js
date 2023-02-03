@@ -142,6 +142,7 @@ export class Game {
 
         this.mapGui = new Gui(this)
             .setName("map")
+            .setParentSize()
             .addComponent(new BackGround().setImg("./src/assets/background.png").setPosition(1.75, 1.2).setSize(9.5, 1.2).positionFromButtom(), "none")
 
         this.mainGui.addComponent(this.mapGui, "main")

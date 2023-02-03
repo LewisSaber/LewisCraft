@@ -7,7 +7,7 @@ import { getUniqueIdentificator } from "../utility.js"
 export default class Gui {
     constructor(game) {
         this.name = "name"
-        this.size = new Vector(-1, -1)
+        this.size = new Vector(0, 0)
         this.game = game
         this.isOpen = false
         this.position = new Vector()
@@ -138,6 +138,10 @@ export default class Gui {
         }
         return this
         // this.size = windowSize
+    }
+    setParentSize() {
+        this.size = new Vector(-1, -1)
+        return this
     }
     createContainer() {
 

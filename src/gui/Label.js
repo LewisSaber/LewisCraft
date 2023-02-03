@@ -43,6 +43,7 @@ export class Label extends Gui {
         this.container.style.fontSize = this.fontSize * (pixelSize.x)
     }
     build() {
+        this.setParentSize()
         super.build()
         this.loadValues()
 
