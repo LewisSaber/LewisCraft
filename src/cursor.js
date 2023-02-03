@@ -84,7 +84,6 @@ export default class Cursor {
             shift: this.keyStates.get("ShiftLeft", 0)
         }
         isText ??= this.toolTip.isText
-        console.log(isText)
         if (isText) {
             this.toolTip.makeTextTooltip(slot, options)
             if (this.isEmpty()) {

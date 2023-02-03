@@ -263,7 +263,6 @@ export class Player extends Entity {
             let slot = new Slot().setFilter((item) => item.getItem() instanceof classes.machine).setAdditionalInfo("R-Click to Open")
             slot.onPlacing = () => {
                 if (!slot.isEmpty()) {
-                    console.log(slot.getItem().getGui())
                     this.machinesGui.addComponent(slot.getItem().getGui(), "main")
                     slot.backButton = new Button()
                         .setText("Back", 0.3, undefined, 0.45)
