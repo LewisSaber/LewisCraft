@@ -181,7 +181,8 @@ export class Player extends Entity {
             .setDraggable()
             .setPosition(2, 0.6)
             .setFontSize(0.3)
-            .addComponent(new BackGround().setImg("./src/assets/background.png").setSize(9.5, 9))
+            .setSize(9.5, 9)
+            .addComponent(new BackGround().setImg("./src/assets/background.png").setParentSize())
 
 
         this.getGame().mainGui.addComponent(this.InventoryGui, "main")

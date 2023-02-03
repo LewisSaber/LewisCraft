@@ -174,6 +174,7 @@ export class Slot {
         return this.item.isEmpty()
     }
     handleClick(evt) {
+        evt.stopPropagation()
 
         switch (evt.button) {
             case 0:

@@ -13,6 +13,7 @@ export class BackGround extends Gui {
         this.container.style.imageRendering = "pixelated"
         this.container.style.position = "absolute"
         this.container.style.display = "none"
+        this.container.style.pointerEvents = "none"
         this.container.disableContextMenu()
         return this
     }

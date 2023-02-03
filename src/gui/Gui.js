@@ -368,6 +368,8 @@ export default class Gui {
         }
     }
     drag(evt) {
+
+
         let newMousePos = new Vector(evt.clientX, evt.clientY)
         let newPos = this.position.add_vec(newMousePos.sub_vec(this.mousePos).div_vec(this.getPixelSize()))
         this.setPosition(newPos.x, newPos.y)
@@ -375,14 +377,19 @@ export default class Gui {
     }
 
     onmousedown(evt) {
+
         if (this.isDraggable) {
+
+
             evt.preventDefault()
+            evt.stopPropagation()
             this.drag_func_listener = this.drag.bind(this)
             this.mousePos = new Vector(evt.clientX, evt.clientY)
             this.container.addEventListener("mousemove", this.drag_func_listener)
         }
     }
     onmouseup(evt) {
+
         if (this.isDraggable) {
             this.container.removeEventListener("mousemove", this.drag_func_listener)
             delete this.mousePos
