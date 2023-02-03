@@ -20,6 +20,7 @@ export default class Gui {
             fromButtom: false,
             fromRight: false
         }
+        this.decoration = 0
         this.isBuilt = false
         this.isDraggable = false
     }
@@ -30,7 +31,15 @@ export default class Gui {
     getName() {
         return this.name
     }
+    decorationGrid(size) {
+        let pixelsize = this.getPixelSize()
+        return {
 
+
+            'background-image': 'linear-gradient(rgba(0, 255, 0, .7) .05em, transparent .1em), linear-gradient(90deg, rgba(0, 255, 0, .7) .1em, transparent .1em)',
+            'background-size': `${pixelsize.x}px ${pixelsize.y}px`
+        }
+    }
     getFontSize() {
         return this.fontSize || this.parent.getFontSize()
     }
@@ -50,7 +59,10 @@ export default class Gui {
     }
 
     setPosition(x, y) {
-        this.position = new Vector(x, y)
+        if (x instanceof Vector)
+            this.position = x
+        else
+            this.position = new Vector(x, y)
         if (this.isBuilt)
             this.resizePosition()
         return this
@@ -76,7 +88,7 @@ export default class Gui {
 
     applyDecoration() {
         if (this[`decoration${this.decoration}`])
-            this.container.applyStyle(this[`decoration${this.decoration}`](this.size.multiply(this.getPixelSize())))
+            this.container.applyStyle(this[`decoration${this.decoration}`](this.size.multiply(this.getPixelSize()), this.position.multiply(this.getPixelSize())))
     }
 
     setWidth(width) {
@@ -130,11 +142,11 @@ export default class Gui {
                 }
         }
         else {
-
+            let size = this.parent.getSize()
             if (this.size.x == -1)
-                this.size.x = this.parent.size.x
+                this.size.x = size.x
             if (this.size.y == -1)
-                this.size.y = this.parent.size.y
+                this.size.y = size.y
         }
         return this
         // this.size = windowSize
@@ -209,9 +221,8 @@ export default class Gui {
                 position.y = this.parent.size.y - this.position.y
             }
             if (this.positionalOptions.fromRight) {
-                position.x = this.parent.size.x - position.x
+                position.x = this.parent.size.x - this.position.x
             }
-
         }
         this.container.setPosition(position.multiply(pixelSize))
     }
@@ -219,6 +230,7 @@ export default class Gui {
     resize() {
         let pixelSize = this.getPixelSize()
         this.container.setSize(this.size.multiply(pixelSize))
+
         this.resizePosition()
 
 
@@ -280,8 +292,6 @@ export default class Gui {
         }
         this.components[channel][component.getId()] = component
 
-
-
         component.resize()
 
         if (shouldOpen)
@@ -319,6 +329,10 @@ export default class Gui {
 
     getPixelSize() {
         return this.pixelSize || this.parent.getPixelSize()
+    }
+
+    getSize() {
+        return this.size.isZero() ? this.parent.getSize() : this.size
     }
 
     getActiveGui(channel) {

@@ -40,12 +40,22 @@ export class Vector {
     hasZeroAxis() {
         return this.x == 0 || this.y == 0
     }
+    isZero() {
+        return this.x == 0 && this.y == 0
+    }
     toString() {
         return `(${this.x}, ${this.y})`
     }
     copy() {
         return new Vector(this.x, this.y)
     }
+    min() {
+        return this.x < this.y ? this.x : this.y
+    }
+    max() {
+        return this.x > this.y ? this.x : this.y
+    }
+
 }
 
 

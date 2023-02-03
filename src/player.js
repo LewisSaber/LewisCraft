@@ -11,6 +11,7 @@ import { CraftingTable } from "./CraftingTable.js";
 import { Button } from "./gui/Button.js";
 import { classes, getRarityColor } from "./Item.js";
 import TranslateName from "./Translator.js";
+import { closingButton } from "./gui/GuiUtilityComponents.js";
 
 export class Player extends Entity {
     constructor(img_url, gl, vs, fs, map) {
@@ -112,11 +113,11 @@ export class Player extends Entity {
         }
         if (this.keyStates[KEYBIND_VALUES.OPEN_INVENTORY]) {
             this.keyStates[KEYBIND_VALUES.OPEN_INVENTORY] = false
-            if (this.InventoryGui.isOpen) {
+            if (this.rootInventoryGui.isOpen) {
                 this.getGame().mapGui.open()
             }
             else
-                this.InventoryGui.open()
+                this.rootInventoryGui.open()
         }
     }
 
@@ -172,20 +173,32 @@ export class Player extends Entity {
 
     }
     createInventoryGui() {
+        let leftOffset = .3
         this.InventorySlots = this.createInventorySlots()
         let InventoryContainer = new SlotCointainer().setSize(9, 4)
             .addSlotArray(this.InventorySlots)
-            .setPosition(.25, 3.9 + 0.9)
+            .setPosition(leftOffset, 3.9 + 0.9)
+
+        //GUI for entire invetory window
+        this.rootInventoryGui = new Gui().setName("rootInventory")
+        this.getGame().mainGui.addComponent(this.rootInventoryGui, "main")
+        //GUI for Inventory
         this.InventoryGui = new Gui(this.map.game)
             .setName("inventroy")
             .setDraggable()
             .setPosition(2, 0.6)
             .setFontSize(0.3)
             .setSize(9.5, 9)
-            .addComponent(new BackGround().setImg("./src/assets/background.png").setParentSize())
+
+            .addComponent(new BackGround().setDecoration(1).setParentSize())
 
 
-        this.getGame().mainGui.addComponent(this.InventoryGui, "main")
+
+
+        this.rootInventoryGui.addComponent(this.InventoryGui)
+
+
+
         this.InventoryGui.addComponent(InventoryContainer)
 
         this.craftingTableGui = new Gui()
@@ -193,7 +206,7 @@ export class Player extends Entity {
 
         this.InventoryGui.addComponent(this.craftingTableGui, "main")
         this.craftingTable = new CraftingTable()
-        this.craftingTableGui.addComponent(this.craftingTable.getContainer().setPosition(0.25, 0.2))
+        this.craftingTableGui.addComponent(this.craftingTable.getContainer().setPosition(leftOffset, 0.3))
 
 
 
@@ -228,7 +241,7 @@ export class Player extends Entity {
             let button = new Button()
             button.setPosition(-1, y)
                 .setZLayer(-2)
-                .setSize(1.26, 1)
+                .setSize(1.32, 1)
                 .setBackGround(getImg("buttonleft"))
                 .setIcon(getImg(Pair.icon))
 
@@ -238,11 +251,15 @@ export class Player extends Entity {
             button.close = () => {
                 button.setZLayer(-2).setPosition(-1, y)
             }
+
             button.addAction(() => { Pair.gui.open(); button.open(); button.setPosition(-1.1, y).setZLayer(2) })
-            if (iter == 0) {
-                button.setPosition(-1.1, y).setZLayer(2)
-            }
             this.InventoryGui.addComponent(button, "leftButton")
+            if (iter == 0) {
+
+                button.setPosition(-1.1, y).setZLayer(2)
+
+            }
+
 
             iter++
         }
@@ -264,21 +281,19 @@ export class Player extends Entity {
             let slot = new Slot().setFilter((item) => item.getItem() instanceof classes.machine).setAdditionalInfo("R-Click to Open")
             slot.onPlacing = () => {
                 if (!slot.isEmpty()) {
-                    this.machinesGui.addComponent(slot.getItem().getGui(), "main")
-                    slot.backButton = new Button()
-                        .setText("Back", 0.3, undefined, 0.45)
-                        .setSize(1.9, 0.5)
-                        .setPosition(0.25, 4.2)
-                        .setIcon(getImg("leftArrow"), 0.001, 0.022, 0.9, 0.48, true)
-                        .addAction(() => { machineSelectionGui.open() })
-                    slot.getItem().getGui().addComponent(slot.backButton)
+                    this.rootInventoryGui.addComponent(slot.getItem().getGui())
+                    slot.getItem().getGui().setZLayer(100).setPosition(this.InventoryGui.position.add_vec(new Vector(3, 1))).close()
+                    slot.getItem().getGui().backButton = closingButton()
+                    slot.getItem().getGui().addComponent(slot.getItem().getGui().backButton)
+
                 }
             }
             slot.onRemoval = (oldItem) => {
                 if (!oldItem.isEmpty()) {
-
-                    this.machinesGui.removeComponent(oldItem.getItem().getGui())
-                    oldItem.getItem().getGui().removeComponent(slot.backButton)
+                    this.rootInventoryGui.removeComponent(oldItem.getItem().getGui())
+                    // this.machinesGui.removeComponent(oldItem.getItem().getGui())
+                    oldItem.getItem().getGui().removeComponent(oldItem.getItem().getGui().backButton)
+                    //oldItem.getItem().getGui().removeComponent(slot.backButton)
                     delete slot.backButton
                 }
             }
@@ -308,15 +323,11 @@ export class Player extends Entity {
             let slot = new Slot().setFilter((item) => item.getItem() instanceof classes.backpack).setAdditionalInfo("R-Click to Open")
             slot.onPlacing = () => {
                 if (!slot.isEmpty()) {
+                    this.rootInventoryGui.addComponent(slot.getItem().getGui())
+                    slot.getItem().getGui().setZLayer(100).setPosition(this.InventoryGui.position.add_vec(new Vector(0, 1))).close()
+                    slot.getItem().getGui().backButton = closingButton()
+                    slot.getItem().getGui().addComponent(slot.getItem().getGui().backButton)
 
-                    this.backpacksGui.addComponent(slot.getItem().getGui(), "main")
-                    slot.backButton = new Button()
-                        .setText("Back", 0.3, undefined, 0.45)
-                        .setSize(1.9, 0.5)
-                        .setPosition(0.25, 4.2)
-                        .setIcon(getImg("leftArrow"), 0.001, 0.022, 0.9, 0.48, true)
-                        .addAction(() => { backpacksSelectionGui.open() })
-                    slot.getItem().getGui().addComponent(slot.backButton)
                 }
             }
             slot.onRemoval = (oldItem) => {

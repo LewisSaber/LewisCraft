@@ -42,7 +42,7 @@ export class Game {
         this.session = new Session(this)
 
 
-        this.mainGui = new Gui().setHeight(12).setFontSize(0.3).build()
+        this.mainGui = new Gui().setParentSize().setHeight(12).setFontSize(0.3).build()
         this.mainGui.open()
         this.createMapGui()
 

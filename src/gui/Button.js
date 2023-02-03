@@ -81,6 +81,7 @@ export class Button extends Gui {
 
     }
     handleClick(evt) {
+        evt.stopPropagation()
         switch (evt.button) {
             case 0:
                 if (this.actions.left)

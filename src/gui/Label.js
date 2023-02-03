@@ -20,8 +20,14 @@ export class Label extends Gui {
             this.loadValues()
         return this
     }
+    centerText() {
+        this.textCentered = true
+        return this
+    }
     createContainer() {
         this.container = document.createElement("div")
+        if (this.textCentered)
+            this.container.style.textAlign = "center"
         this.container.style.position = "absolute"
         this.container.style.fontFamily = "Minecraftia"
 

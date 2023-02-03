@@ -30,10 +30,11 @@ export class CraftingTable {
         this.recipeMap = CRAFTING_RECIPE_MAP
     }
     createGui() {
-        let background = new BackGround().setImg(getImg("craftingarrow")).setSize(1, 1).setPosition(2.9, 0)
-        this.gui = new Gui().setName("craftingTable").addComponent(background)
-        this.outputSlotContainer = new SlotCointainer().setSize(1, 1).setPosition(3, 1)
-        this.SlotContainer = new SlotCointainer().setSize(3, 3)
+        let background = new BackGround().setImg(getImg("craftingarrow")).setSize(1, 1).setPosition(2.9 + 0.25, 0.25)
+        let background2 = new BackGround().setDecoration(1)
+        this.gui = new Gui().setName("craftingTable").setDraggable().setSize(4.5, 3.5).addComponent(background2).addComponent(background)
+        this.outputSlotContainer = new SlotCointainer().setSize(1, 1).setPosition(3.25, 1.25).setZLayer(4)
+        this.SlotContainer = new SlotCointainer().setSize(3, 3).setPosition(0.25, 0.25)
         this.gui.addComponent(this.SlotContainer).addComponent(this.outputSlotContainer)
     }
     getContainer() {

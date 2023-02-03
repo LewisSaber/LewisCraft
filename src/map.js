@@ -34,7 +34,6 @@ export class Map {
 
     }
     onMapClick({ clientX, clientY }) {
-        console.log(clientX, clientY)
         let pixelPerBlock = this.game.canvasElm.height / this.getBlocksHeight()
         let clickCoordinates = new Vector(clientX, clientY).scale(1 / pixelPerBlock).add_vec(this.player.coordinates.sub_vec(this.player.position)).shiftInPlace()
         console.log("clicked at", clickCoordinates.toString())

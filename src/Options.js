@@ -19,7 +19,7 @@ export default class OptionsController {
 
     }
     createMainGui() {
-        this.mainGui = new Gui().setName("options").setPosition(1, 0.95)
+        this.mainGui = new Gui().setName("options").setPosition(1, 0.95).setParentSize()
         this.game.mainGui.addComponent(this.mainGui, "main")
 
         let OptionsBackGround = new BackGround()

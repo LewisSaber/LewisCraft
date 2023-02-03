@@ -1,8 +1,13 @@
+import { BackGround } from "./gui/Background.js"
 import Gui from "./gui/Gui.js"
+import { Label } from "./gui/Label.js"
+import OutputSlot from "./gui/OutputSlot.js"
 import { Slot } from "./gui/Slot.js"
 import { SlotCointainer } from "./gui/SlotContainer.js"
 import ItemStack from "./ItemStack.js"
 import { Inventory } from "./player.js"
+import TranslateName from "./Translator.js"
+import { getImg } from "./utility.js"
 
 export function getDeprecatedName(name) {
     return DEPRECATED.get(name, name)
@@ -153,8 +158,14 @@ classes.backpack = class backpack extends classes.Item {
         }
     }
     createGui() {
-        this.gui = new Gui().setName("backpackInside")
-        let container = new SlotCointainer().setSize(9, Math.ceil(this.capacity / 9)).setPosition(0.25, 0.2)
+        let width = Math.min(this.capacity, 9)
+        let height = Math.ceil(this.capacity / 9)
+        this.gui = new Gui().setName("backpackInside").setDraggable().setSize(width + 1, height + 0.8)
+            .addComponent(new BackGround().setDecoration(1))
+
+        let label = new Label().setPosition(0, 0.1).setText(TranslateName(this.name)).centerText().setFontSize(0.4)
+        this.gui.addComponent(label)
+        let container = new SlotCointainer().setSize(width, height).setPosition(0.5, 0.75)
         for (let ItemStack of this.inventory.getAllInventory()) {
             let slot = new Slot().setItem(ItemStack).build()
             container.addSlot(slot)
@@ -222,18 +233,20 @@ classes.furnace = class furnace extends classes.machine {
         super(amount)
     }
     createGui() {
-        this.gui = new Gui().setName("Furance")
-
-        let inputContainer = new SlotCointainer().setSize(1, 1)
+        this.gui = new Gui().setName("Furnace").setSize(4.3, 3.5).setDraggable().addComponent(new BackGround().setDecoration(1))
+        let label = new Label().setPosition(0, 0.1).setText(TranslateName(this.name)).centerText().setFontSize(0.4)
+        this.gui.addComponent(label)
+        let labelOffset = 0.5
+        let inputContainer = new SlotCointainer().setSize(1, 1).setPosition(0.75, labelOffset + .25)
         let inputslot = new Slot().setItem(this.input).build()
         inputContainer.addSlot(inputslot)
 
-        let fuelContainer = new SlotCointainer().setSize(1, 1)
+        let fuelContainer = new SlotCointainer().setSize(1, 1).setPosition(0.75, labelOffset + 1.75)
         let fuelSlot = new Slot().setItem(this.fuel).build()
         fuelContainer.addSlot(fuelSlot)
 
-        let outputContainer = new SlotCointainer().setSize(1, 1).setPosition(5, 4)
-        let outputSlot = new Slot().setItem(this.output).build()
+        let outputContainer = new SlotCointainer().setSize(1, 1).setPosition(2.3 + .25, labelOffset + 1)
+        let outputSlot = new OutputSlot().setItem(this.output).build()
         outputContainer.addSlot(outputSlot)
 
         this.gui.addComponent(inputContainer)
