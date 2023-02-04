@@ -1,16 +1,15 @@
 import { BackBuffer } from "./material.js";
 import { M3x3, Vector } from "./math.js"
 import { Map } from "./map.js"
-import ItemStack from "./ItemStack.js";
 import Cursor from "./cursor.js";
 import { Session } from "./Session.js";
 import OptionsController from "./Options.js";
 import Gui from "./gui/Gui.js";
 import { BackGround } from "./gui/Background.js";
+import { loadRecipes } from "./Recipes.js"
 import { getImg } from "./utility.js";
-"./Item.js";
 
-
+console.log("initialised")
 export function loop(time) {
 
     window.game.update(time)
@@ -20,6 +19,7 @@ export function loop(time) {
 
 export class Game {
     constructor() {
+        loadRecipes()
         this.canvasElm = document.createElement("canvas")
         this.canvasElm.disableContextMenu()
         this.canvasElm.width = 800
@@ -50,6 +50,8 @@ export class Game {
 
         this.map = new Map(this.gl, vs, fs, this)
 
+
+        //  this.mainGui.addComponent(new BackGround().setBackGround(getImg("stone")).setPosition(1, 1).setSize(4, 4).addComponent(new BackGround().setSize(4, 4).setImg(getImg("background"))))
         this.lastFrame = 0
         this.lastSecond = 0
         this.lastTick = 0

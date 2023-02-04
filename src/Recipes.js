@@ -1,7 +1,10 @@
 import ItemStack from "./ItemStack.js"
 
 
-export class CraftingRecipeMap {
+
+console.log("initialised")
+
+class CraftingRecipeMap {
     constructor() {
         this.shapelessRecipes = []
         this.shapedRecipes = []
@@ -17,8 +20,27 @@ export class CraftingRecipeMap {
         }
     }
 }
-export const CRAFTING_RECIPE_MAP = new CraftingRecipeMap()
 
+class FurnaceRecipeMap {
+    constructor() {
+        this.recipes = []
+
+    }
+    addRecipe(recipe) {
+        this.recipes.push(recipe)
+    }
+    getRecipe(ItemStack) {
+
+        for (let recipe of this.recipes) {
+            if (recipe.compareRecipe(ItemStack))
+                return recipe
+        }
+    }
+}
+
+
+export const CRAFTING_RECIPE_MAP = new CraftingRecipeMap()
+export const FURNACE_RECIPE_MAP = new FurnaceRecipeMap()
 
 export class RecipeBase {
     constructor() {
@@ -27,26 +49,26 @@ export class RecipeBase {
         /** @type {ItemStack[]} */
         this.outputs = []
         this.stringedInputs = {}
-        this.shiftedInputs = []
+
     }
-    addInputItem(item, count) {
+    addInputItem(item, count = 1) {
         this.inputs.push(new ItemStack(item, count))
         return this
     }
-    addInputItemStack(ItemStack) {
-        this.inputs.push(ItemStack.copy())
+    addInputItemStack(Item_Stack) {
+        this.inputs.push(Item_Stack.copy())
         return this
     }
-    addOutputItemStack(ItemStack) {
-        this.outputs.push(ItemStack.copy())
+    addOutputItemStack(Item_Stack) {
+        this.outputs.push(Item_Stack.copy())
         return this
     }
-    addLetterItem(letter, item, count) {
+    addLetterItem(letter, item, count = 1) {
         this.stringedInputs[letter] = new ItemStack(item, count)
         return this
     }
-    addLetterItemStack(letter, ItemStack) {
-        this.stringedInputs[letter] = ItemStack
+    addLetterItemStack(letter, Item_Stack) {
+        this.stringedInputs[letter] = Item_Stack
         return this
     }
     addOutputItem(item, count) {
@@ -60,6 +82,73 @@ export class RecipeBase {
         this.recipeString = string
         return this
     }
+
+    build() {
+        if (this.recipeString) {
+            this.recipeString += " ".repeat(9 - this.recipeString.length)
+            for (let letter of this.recipeString) {
+                if (letter == " ") {
+                    this.inputs.push(new ItemStack())
+                } else {
+                    this.inputs.push(this.stringedInputs[letter].copy())
+                }
+            }
+        }
+        this.recipeString = undefined
+        this.stringedInputs = undefined
+        return this
+    }
+    getOutput(i) {
+        return this.outputs[i]
+    }
+    getInput(i) {
+        return this.inputs[i]
+    }
+    compareRecipe(ItemStack_array) {
+        return false
+    }
+
+}
+
+export class FuranceRecipe extends RecipeBase {
+    constructor() {
+        super()
+        this.time = 0
+    }
+    addTime(timeInTicks) {
+        this.time = timeInTicks
+        return this
+    }
+    getTime() {
+        return this.time
+    }
+    build() {
+        super.build()
+        FURNACE_RECIPE_MAP.addRecipe(this)
+        return this
+    }
+    compareRecipe(Item_Stack) {
+        if (!this.inputs[0].isSame(Item_Stack)) {
+            return false
+        }
+        if (this.inputs[0].getAmount() > Item_Stack.getAmount()) {
+            return false
+        }
+        return true
+    }
+
+}
+
+export class ShapedRecipe extends RecipeBase {
+    constructor() {
+        super()
+
+        this.shiftedInputs = []
+    }
+    getShiftedInput(i) {
+        return this.shiftedInputs[i]
+    }
+
     shiftInput() {
         let topShift = 0
         if (this.inputs[0].isEmpty() && this.inputs[1].isEmpty() && this.inputs[2].isEmpty()) {
@@ -79,34 +168,10 @@ export class RecipeBase {
 
     }
     build() {
-        if (this.recipeString)
-            this.recipeString += " ".repeat(9 - this.recipeString.length)
-        for (let letter of this.recipeString) {
-            if (letter == " ") {
-                this.inputs.push(new ItemStack())
-            } else {
-                this.inputs.push(this.stringedInputs[letter].copy())
-            }
-        }
+        super.build()
         this.shiftInput()
-        this.recipeString = undefined
-        this.stringedInputs = undefined
+        CRAFTING_RECIPE_MAP.addShapedRecipe(this)
         return this
-    }
-    getOutput(i) {
-        return this.outputs[i]
-    }
-    getInput(i) {
-        return this.inputs[i]
-    }
-    getShiftedInput(i) {
-        return this.shiftedInputs[i]
-    }
-}
-
-export class ShapedRecipe extends RecipeBase {
-    constructor() {
-        super()
     }
     compareRecipe(ItemStack_array) {
 
@@ -120,12 +185,11 @@ export class ShapedRecipe extends RecipeBase {
         }
         return true
     }
-    build() {
-        super.build()
-        CRAFTING_RECIPE_MAP.addShapedRecipe(this)
-        return this
-    }
 }
 
-new ShapedRecipe().addString("    l    ").addLetterItem("l", "logoak", 1).addOutputItem("planksoak", 4).build()
-new ShapedRecipe().addString("    p  p ").addLetterItem("p", "planksoak", 1).addOutputItem("stick", 4).build()
+
+export function loadRecipes() {
+    new ShapedRecipe().addString("    l    ").addLetterItem("l", "logoak", 1).addOutputItem("planksoak", 4).build()
+    new ShapedRecipe().addString("    p  p ").addLetterItem("p", "planksoak", 1).addOutputItem("stick", 4).build()
+    new FuranceRecipe().addInputItem("planksoak").addOutputItem("stick", 4).addTime(100).build()
+}

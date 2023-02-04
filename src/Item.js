@@ -1,13 +1,18 @@
+import ItemStack from "./ItemStack.js"
 import { BackGround } from "./gui/Background.js"
 import Gui from "./gui/Gui.js"
 import { Label } from "./gui/Label.js"
 import OutputSlot from "./gui/OutputSlot.js"
 import { Slot } from "./gui/Slot.js"
 import { SlotCointainer } from "./gui/SlotContainer.js"
-import ItemStack from "./ItemStack.js"
 import { Inventory } from "./player.js"
 import TranslateName from "./Translator.js"
-import { getImg } from "./utility.js"
+import { FURNACE_RECIPE_MAP } from "./Recipes.js"
+import ProgressBar from "./gui/Progressbar.js"
+console.log("initialised")
+
+
+export let classes = {}
 
 export function getDeprecatedName(name) {
     return DEPRECATED.get(name, name)
@@ -20,8 +25,6 @@ const DEPRECATED = {
 
 
 
-
-export let classes = {}
 
 export function getRarityColor(rarity) {
     return RarityColors.get(rarity, RarityColors[0])
@@ -210,9 +213,9 @@ classes.smallbackpack = class smallbackpack extends classes.backpack {
 classes.machine = class machine extends classes.Item {
     constructor(amount) {
         super(amount)
-        this.input = new ItemStack()
-        this.fuel = new ItemStack()
-        this.output = new ItemStack()
+        this.isPlaced = false
+        this.isWorking = false
+        this.progress = 0
     }
     getType() {
         return "Machine"
@@ -225,30 +228,73 @@ classes.machine = class machine extends classes.Item {
             this.createGui()
         return this.gui
     }
-
+    update() {
+        console.log("updating")
+    }
+    subscribeToTick() {
+        this.subscribeFunc = () => { this.onTick() }
+        window.addEventListener("tick", this.subscribeFunc)
+    }
+    unsubscribeFromTick() {
+        window.removeEventListener("tick", this.subscribeFunc)
+    }
+    onTick() {
+        if (this.progress > 0) {
+            this.progress--
+        }
+    }
+    onPlace() {
+        this.isPlaced = true
+        this.update()
+        this.subscribeToTick()
+    }
+    onRemove() {
+        this.isPlaced = false
+        this.unsubscribeFromTick()
+    }
+    save() {
+        let saving = super.save()
+        saving.isPlaced = this.isPlaced
+        return saving
+    }
 }
 
 classes.furnace = class furnace extends classes.machine {
     constructor(amount) {
         super(amount)
+        this.input = new ItemStack()
+        this.input.subscribeSlotToUpdate(this)
+
+        this.fuel = new ItemStack()
+        this.fuel.subscribeSlotToUpdate(this)
+
+        this.output = new ItemStack()
+        this.output.subscribeSlotToUpdate(this)
+
+        this.recipeMap = FURNACE_RECIPE_MAP
+
+
     }
     createGui() {
         this.gui = new Gui().setName("Furnace").setSize(4.3, 3.5).setDraggable().addComponent(new BackGround().setDecoration(1))
         let label = new Label().setPosition(0, 0.1).setText(TranslateName(this.name)).centerText().setFontSize(0.4)
         this.gui.addComponent(label)
         let labelOffset = 0.5
-        let inputContainer = new SlotCointainer().setSize(1, 1).setPosition(0.75, labelOffset + .25)
+        let inputContainer = new SlotCointainer().setSize(1, 1).setPosition(0.65, labelOffset + .25)
         let inputslot = new Slot().setItem(this.input).build()
         inputContainer.addSlot(inputslot)
 
-        let fuelContainer = new SlotCointainer().setSize(1, 1).setPosition(0.75, labelOffset + 1.75)
+        let fuelContainer = new SlotCointainer().setSize(1, 1).setPosition(0.65, labelOffset + 1.75)
         let fuelSlot = new Slot().setItem(this.fuel).build()
         fuelContainer.addSlot(fuelSlot)
 
-        let outputContainer = new SlotCointainer().setSize(1, 1).setPosition(2.3 + .25, labelOffset + 1)
+        let outputContainer = new SlotCointainer().setSize(1, 1).setPosition(2.5 + .25, labelOffset + 1)
         let outputSlot = new OutputSlot().setItem(this.output).build()
         outputContainer.addSlot(outputSlot)
 
+
+        this.progressBar = new ProgressBar().setPosition(1.6, labelOffset + 1.2).setSize(1, 0.5).setInverted().setDecoration(1).setProgressColor("white")
+        this.gui.addComponent(this.progressBar)
         this.gui.addComponent(inputContainer)
         this.gui.addComponent(fuelContainer)
         this.gui.addComponent(outputContainer)
@@ -271,12 +317,48 @@ classes.furnace = class furnace extends classes.machine {
             default:
                 break;
         }
+
     }
     save() {
         let saving = super.save()
+
         saving.input = this.input.save()
         saving.output = this.output.save()
         saving.fuel = this.fuel.save()
         return saving
+    }
+    update() {
+        if (!this.isWorking)
+            if (this.isPlaced) {
+                this.recipe = this.recipeMap.getRecipe(this.input)
+                if (this.recipe) {
+                    if (this.output.canAdd(this.recipe.getOutput(0))) {
+                        this.progress = this.recipe.getTime()
+                        if (this.progressBar)
+                            this.progressBar.setMaxValue(this.progress)
+                        this.isWorking = true
+                    }
+                }
+            }
+
+
+
+    }
+    finishRecipe() {
+        this.isWorking = false
+        if (this.recipe.compareRecipe(this.input) && this.output.canAdd(this.recipe.getOutput(0))) {
+            this.output.add(this.recipe.getOutput(0).copy())
+            this.input.decreaseAmount(this.recipe.getInput(0).getAmount())
+        }
+    }
+
+    onTick() {
+        super.onTick()
+        if (this.isWorking)
+            if (this.progressBar)
+                this.progressBar.update(this.progress)
+        if (this.progress == 0) {
+            this.finishRecipe()
+        }
     }
 }

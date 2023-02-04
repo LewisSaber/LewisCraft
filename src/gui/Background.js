@@ -10,6 +10,7 @@ export class BackGround extends Gui {
     }
     createContainer() {
         this.container = document.createElement("div")
+        this.container.name = this.name
         this.container.style.backgroundSize = "100% 100%"
         this.container.style.imageRendering = "pixelated"
         this.container.style.position = "absolute"

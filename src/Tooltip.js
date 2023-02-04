@@ -1,7 +1,7 @@
 import { getRarityColor } from "./Item.js";
 import ItemStack from "./ItemStack.js";
 import TranslateName, { TranslateRarity } from "./Translator.js";
-
+console.log("initialised")
 export default class Tooltip {
     constructor() {
         this.item = new ItemStack()
@@ -68,6 +68,8 @@ export default class Tooltip {
     clear() {
         this.hide()
         this.item = new ItemStack()
+        this.text = undefined
+        this.isText = false
     }
     getItem() {
         return this.item

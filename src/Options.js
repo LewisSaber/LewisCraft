@@ -6,7 +6,7 @@ import { Label } from "./gui/Label.js"
 import { Vector } from "./math.js"
 import TranslateName, { TranslateKeyCode } from "./Translator.js"
 import { reverseObject } from "./utility.js"
-
+console.log("initialised")
 export default class OptionsController {
     constructor(game) {
         /** @type {Game}*/

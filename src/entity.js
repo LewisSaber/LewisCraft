@@ -2,6 +2,7 @@ import { Map } from "./map.js";
 import { Sprite } from "./material.js";
 import { Vector } from "./math.js";
 
+console.log("initialised")
 export class Entity {
     constructor(img_url, size, gl, vs, fs, map) {
         this.coordinates = new Vector()

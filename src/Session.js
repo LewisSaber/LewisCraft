@@ -1,5 +1,5 @@
 import { mergeObject } from "./utility.js"
-
+console.log("initialised")
 export class Session {
     constructor(game) {
         this.game = game

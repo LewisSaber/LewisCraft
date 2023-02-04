@@ -5,7 +5,7 @@ export function createEmptyArray(width, height) {
     }
     return result
 }
-
+console.log("initialised")
 export class NumberRange {
     constructor(start = 0, end = 0) {
         this.start = start

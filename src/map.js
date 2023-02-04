@@ -8,6 +8,7 @@ import { Player } from "./player.js"
 import { Chunk } from "./chunk.js"
 import { Game } from "./game.js"
 
+console.log("initialised")
 export class Map {
     constructor(gl, VS, FS, game) {
         this.gl = gl

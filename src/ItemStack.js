@@ -1,7 +1,9 @@
-import { classes, getDeprecatedName } from "./Item.js"
+import { getDeprecatedName, classes } from "./Item.js"
 import { getUniqueIdentificator, mergeObject } from "./utility.js"
 
 
+
+console.log("initialised")
 export default class ItemStack {
     constructor(itemName = "Empty", amount = 0) {
 
@@ -31,12 +33,13 @@ export default class ItemStack {
             ItemStack.item = new classes.Empty()
         }
         if (this.isSame(ItemStack)) {
-            ItemStack.setAmount(this.addAmount(ItemStack.getAmount()))
+            ItemStack.setAmount(this.addAmount(ItemStack.getAmount()), false)
 
         }
         if (this.getAmount() == 0) {
             this.item = new classes.Empty()
         }
+
         this.update()
         ItemStack.update()
         return ItemStack
@@ -55,12 +58,13 @@ export default class ItemStack {
     getName() {
         return this.item.name
     }
-    setAmount(amount) {
+    setAmount(amount, callUpdate = true) {
         this.item.amount = amount
         if (this.item.amount <= 0) {
             this.item = new classes.Empty()
         }
-        this.update()
+        if (callUpdate)
+            this.update()
     }
     addAmount(amount) {
         let empty = this.item.getEmpty()
@@ -93,6 +97,7 @@ export default class ItemStack {
         delete this.subscribed[id]
     }
     update() {
+
         for (let id in this.subscribed) {
             this.subscribed[id].update()
         }
@@ -109,14 +114,19 @@ export default class ItemStack {
     load(obj) {
         obj.name = getDeprecatedName(obj.name)
         this.item = new classes[obj.name](obj.amount)
+        let queue = []
         for (const prop in obj) {
             if (obj[prop] instanceof Object) {
-                this.item.load(prop, obj[prop])
+                queue.push(prop)
             }
             else
                 this.item[prop] = obj[prop]
         }
+        for (const prop of queue) {
+            this.item.load(prop, obj[prop])
+        }
 
+        this.item.update?.()
         this.update()
     }
     getGui() {

@@ -8,6 +8,7 @@ import OutputSlot from "./gui/OutputSlot.js";
 import { Inventory, Player } from "./player.js";
 import { getImg } from "./utility.js";
 
+console.log("initialised")
 export class CraftingTable {
     constructor(game) {
         this.game = game

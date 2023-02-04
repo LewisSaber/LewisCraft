@@ -1,8 +1,8 @@
-import { Game, loop } from "./game.js";
 import ItemStack from "./ItemStack.js";
+import { Game, loop } from "./game.js";
 
 
-
+console.log("initialised")
 HTMLElement.prototype.setSize = function (sizeVector, type = "px") {
 
     this.style.width = sizeVector.x + type

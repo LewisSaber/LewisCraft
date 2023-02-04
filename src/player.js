@@ -13,6 +13,7 @@ import { classes, getRarityColor } from "./Item.js";
 import TranslateName from "./Translator.js";
 import { closingButton } from "./gui/GuiUtilityComponents.js";
 
+console.log("initialised")
 export class Player extends Entity {
     constructor(img_url, gl, vs, fs, map) {
         super(img_url, new Vector(0.85, 0.85), gl, vs, fs, map)
@@ -279,8 +280,10 @@ export class Player extends Entity {
 
         for (let i = 0; i < this.machines.getSize(); i++) {
             let slot = new Slot().setFilter((item) => item.getItem() instanceof classes.machine).setAdditionalInfo("R-Click to Open")
-            slot.onPlacing = () => {
+            slot.onPlace = () => {
                 if (!slot.isEmpty()) {
+                    console.log("on placing")
+                    slot.getItem().getItem().onPlace()
                     this.rootInventoryGui.addComponent(slot.getItem().getGui())
                     slot.getItem().getGui().setZLayer(100).setPosition(this.InventoryGui.position.add_vec(new Vector(3, 1))).close()
                     slot.getItem().getGui().backButton = closingButton()
@@ -288,8 +291,10 @@ export class Player extends Entity {
 
                 }
             }
-            slot.onRemoval = (oldItem) => {
+            slot.onRemove = (oldItem) => {
                 if (!oldItem.isEmpty()) {
+
+                    oldItem.getItem().getItem().onRemove()
                     this.rootInventoryGui.removeComponent(oldItem.getItem().getGui())
                     // this.machinesGui.removeComponent(oldItem.getItem().getGui())
                     oldItem.getItem().getGui().removeComponent(oldItem.getItem().getGui().backButton)
@@ -321,7 +326,7 @@ export class Player extends Entity {
             .becomeEmptyExpandable()
         for (let i = 0; i < this.backpacks.getSize(); i++) {
             let slot = new Slot().setFilter((item) => item.getItem() instanceof classes.backpack).setAdditionalInfo("R-Click to Open")
-            slot.onPlacing = () => {
+            slot.onPlace = () => {
                 if (!slot.isEmpty()) {
                     this.rootInventoryGui.addComponent(slot.getItem().getGui())
                     slot.getItem().getGui().setZLayer(100).setPosition(this.InventoryGui.position.add_vec(new Vector(0, 1))).close()
@@ -330,10 +335,10 @@ export class Player extends Entity {
 
                 }
             }
-            slot.onRemoval = (oldItem) => {
+            slot.onRemove = (oldItem) => {
                 if (!oldItem.isEmpty()) {
 
-                    this.backpacksGui.removeComponent(oldItem.getItem().getGui())
+                    this.rootInventoryGui.removeComponent(oldItem.getItem().getGui())
                     oldItem.getItem().getGui().removeComponent(slot.backButton)
                     delete slot.backButton
                 }

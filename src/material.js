@@ -1,5 +1,5 @@
 import { M3x3, Vector } from "./math.js";
-
+console.log("initialised")
 export class Material {
     constructor(gl, vs, fs) {
         this.gl = gl;

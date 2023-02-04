@@ -76,10 +76,11 @@ export class Slot {
         }
     }
     setItem(ItemStack) {
+
         /**  @type {ItemStack} */
         this.item = ItemStack
         this.subscribingId = this.item.subscribeSlotToUpdate(this)
-        this.onPlacing()
+        this.onPlace()
         return this
     }
     add(ItemStack) {
@@ -209,14 +210,14 @@ export class Slot {
         }
         toPlace.add(toGet.getItem())
         if (toGet.isEmpty()) {
-            toGet.onRemoval(toPlace)
+            toGet.onRemove(toPlace)
         }
-        toPlace.onPlacing()
+        toPlace.onPlace()
     }
-    onRemoval() {
+    onRemove() {
         //console.log("removing", this.item)
     }
-    onPlacing() {
+    onPlace() {
         // console.log("placing", this.item)
     }
     onRightClick() {
@@ -233,22 +234,17 @@ export class Slot {
 
         }
         /** @type {ItemStack}*/
-
-
         let getterItemStack = toGet.getItem()
         let newItemStack = getterItemStack.copy()
 
         let amountSmall = one ? getterItemStack.getAmount() - 1 : Math.floor(getterItemStack.getAmount() / 2)
         let amountBig = getterItemStack.getAmount() - amountSmall
 
-        newItemStack.setAmount(amountBig)
-        getterItemStack.setAmount(amountSmall)
+        newItemStack.setAmount(amountBig, false)
+        getterItemStack.setAmount(amountSmall, false)
 
         toPlace.add(newItemStack)
         toGet.add(newItemStack)
-
-
-
     }
     select() {
         this.isSelected = true

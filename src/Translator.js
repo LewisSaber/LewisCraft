@@ -5,7 +5,7 @@ export function TranslateRarity(rarity = 0) {
     return RarityList.get(rarity, "Common")
 }
 
-
+console.log("initialised")
 const RarityList = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic"]
 const TranslationTable = {}
 TranslationTable.EN = {

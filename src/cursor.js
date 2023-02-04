@@ -5,7 +5,7 @@ import { Vector } from "./math.js"
 import { Inventory } from "./player.js";
 import Tooltip from "./Tooltip.js";
 
-
+console.log("initialised")
 
 export default class Cursor {
     constructor(game) {
@@ -122,10 +122,10 @@ export default class Cursor {
         if (code == "ShiftLeft")
             this.makeTooltip()
     }
-    onRemoval(oldItem) {
-        this.slot.onRemoval(oldItem)
+    onRemove(oldItem) {
+        this.slot.onRemove(oldItem)
     }
-    onPlacing() {
-        this.slot.onPlacing()
+    onPlace() {
+        this.slot.onPlace()
     }
 }
