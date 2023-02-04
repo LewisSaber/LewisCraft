@@ -58,6 +58,7 @@ export default class Tooltip {
         this.container.style.borderColor = getRarityColor(item.getRarity())
         this.container.innerHTML = `
             ${TranslateName(item.name).color(getRarityColor(item.getRarity()))}<br>
+            ${item.getBurnValue() ? "Burn Value: " + item.getBurnValue().toString().color("#cccfcd") + "<br>" : ""}
            ${(item.getAdditionalTooltip())}
 
             ${slot.getAdditionalInfo()}

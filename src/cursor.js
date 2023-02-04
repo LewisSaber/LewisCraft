@@ -18,7 +18,7 @@ export default class Cursor {
         window.addEventListener("mousemove", e => this.onMouseMove(e));
         window.addEventListener("keydown", (evt) => { this.onKeyDown(evt) })
         window.addEventListener("keyup", (evt) => { this.onKeyUp(evt) })
-        this.slot.getItem().subscribeSlotToUpdate({ update: () => this.makeTooltip() })
+        this.slot.getItem().subscribeSlotToUpdate(() => this.makeTooltip())
         this.createTag()
         this.container.appendChild(this.slot.getContainer())
         this.container.appendChild(this.toolTip.getContainer())

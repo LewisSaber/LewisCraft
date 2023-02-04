@@ -79,7 +79,7 @@ export class Slot {
 
         /**  @type {ItemStack} */
         this.item = ItemStack
-        this.subscribingId = this.item.subscribeSlotToUpdate(this)
+        this.subscribingId = this.item.subscribeSlotToUpdate(() => { this.update() })
         this.onPlace()
         return this
     }

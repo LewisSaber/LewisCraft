@@ -72,7 +72,7 @@ export class SlotCointainer extends Gui {
 
         slot.setParent(this)
         //Unsaved id
-        slot.getItem().subscribeSlotToUpdate(this)
+        slot.getItem().subscribeSlotToUpdate(() => { this.update() })
         this.container.appendChild(slot.getContainer())
         return this
     }

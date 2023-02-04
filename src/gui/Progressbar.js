@@ -9,9 +9,14 @@ export default class ProgressBar extends Gui {
         this.mainColor = "#747574"
         this.progressColor = "#a4a6a5"
         this.isInverted = false
+        this.isVertical = false
     }
     setInverted() {
         this.isInverted = true
+        return this
+    }
+    setVertical() {
+        this.isVertical = true
         return this
     }
     decoration1(size) {
@@ -39,7 +44,11 @@ export default class ProgressBar extends Gui {
 
         this.currentValue = value
         let progress = (this.isInverted ? (this.currentValue == 0 ? 0 : this.maxValue - this.currentValue) / this.maxValue : this.currentValue / this.maxValue) * 100
-        this.insideContainer.style.width = progress + "%"
+        if (this.isVertical)
+            this.insideContainer.style.height = progress + "%"
+        else
+            this.insideContainer.style.width = progress + "%"
+        return this
 
     }
     createContainer() {
@@ -52,7 +61,10 @@ export default class ProgressBar extends Gui {
         this.insideContainer = document.createElement("div")
         this.insideContainer.style.display = "block"
         this.insideContainer.style.position = "absolute"
-        this.insideContainer.style.height = "100%"
+        if (this.isVertical)
+            this.insideContainer.style.width = "100%"
+        else
+            this.insideContainer.style.height = "100%"
 
         this.insideContainer.style.pointerEvents = true ? "all" : "none"
         this.insideContainer.disableContextMenu()
@@ -61,7 +73,7 @@ export default class ProgressBar extends Gui {
         return this
     }
     applyProgressColor() {
-        this.insideContainer.style.backgroundColor = this.progressColor
+        this.insideContainer.style.background = this.progressColor
         return this
     }
     setProgressColor(color) {
@@ -71,7 +83,7 @@ export default class ProgressBar extends Gui {
         return this
     }
     applyMainColor() {
-        this.container.style.backgroundColor = this.mainColor
+        this.container.style.background = this.mainColor
         return this
     }
     setMainColor(color) {

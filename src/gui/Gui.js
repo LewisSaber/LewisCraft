@@ -82,7 +82,11 @@ export default class Gui {
     }
 
     setSize(x, y) {
-        this.size = new Vector(x, y)
+        if (x instanceof Vector) {
+            this.size = x
+        }
+        else
+            this.size = new Vector(x, y)
         return this
     }
 
@@ -144,9 +148,9 @@ export default class Gui {
         else {
             let size = this.parent.getSize()
             if (this.size.x == -1)
-                this.size.x = size.x
+                this.size.x = size.x - this.position.x
             if (this.size.y == -1)
-                this.size.y = size.y
+                this.size.y = size.y - this.position.y
         }
         return this
         // this.size = windowSize

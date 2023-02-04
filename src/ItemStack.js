@@ -88,9 +88,9 @@ export default class ItemStack {
         }
         this.update()
     }
-    subscribeSlotToUpdate(slot) {
+    subscribeSlotToUpdate(func) {
         let id = getUniqueIdentificator()
-        this.subscribed[id] = slot
+        this.subscribed[id] = func
         return id
     }
     removeSlotFromUpdate(id) {
@@ -99,7 +99,7 @@ export default class ItemStack {
     update() {
 
         for (let id in this.subscribed) {
-            this.subscribed[id].update()
+            this.subscribed[id]()
         }
     }
 
