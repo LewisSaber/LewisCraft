@@ -104,8 +104,7 @@ export default class ItemStack {
     }
 
     copy() {
-        let item = new ItemStack(this.item.name, this.item.amount)
-        item.item.onCopy(this.item)
+        let item = new ItemStack().load(this.save())
         return item
     }
     save() {
@@ -128,6 +127,7 @@ export default class ItemStack {
 
         this.item.update?.()
         this.update()
+        return this
     }
     getGui() {
         return this.item.getGui()

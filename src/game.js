@@ -6,8 +6,10 @@ import { Session } from "./Session.js";
 import OptionsController from "./Options.js";
 import Gui from "./gui/Gui.js";
 import { BackGround } from "./gui/Background.js";
-import { loadRecipes } from "./Recipes.js"
+import { loadRecipes, registerRecipeHandlers } from "./Recipes.js"
 import { getImg } from "./utility.js";
+import NEI from "../Nei.js";
+import roundLinkedList from "./roundLinkedList.js";
 
 console.log("initialised")
 export function loop(time) {
@@ -59,6 +61,12 @@ export class Game {
         this.cursor = new Cursor(this)
 
         this.optionController = new OptionsController(this)
+        this.NEI = new NEI(this)
+        registerRecipeHandlers(this.NEI)
+
+    }
+    getNEI() {
+        return this.NEI
     }
 
     onSecond() {

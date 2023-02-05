@@ -97,8 +97,7 @@ export default class Cursor {
 
             if (slot == undefined)
                 slot = this.toolTip.getItem()
-
-            if (this.isEmpty() && !slot.isEmpty()) {
+            if (this.isEmpty() && !this.toolTip.getItem().getTooltipItem().isEmpty()) {
                 this.toolTip.show()
             }
             else {

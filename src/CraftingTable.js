@@ -1,6 +1,6 @@
 import { BackGround } from "./gui/Background.js";
 import Gui from "./gui/Gui.js";
-import { CRAFTING_RECIPE_MAP } from "./Recipes.js";
+import { CRAFTING_RECIPE_MAP, ShapedRecipe } from "./Recipes.js";
 import { Slot } from "./gui/Slot.js";
 import { SlotCointainer } from "./gui/SlotContainer.js";
 import ItemStack from "./ItemStack.js";
@@ -14,18 +14,19 @@ export class CraftingTable {
         this.game = game
         this.createGui()
 
-        this.inputSlots = []
+        // this.inputSlots = []
         this.inputInventory = new Inventory(9)
         this.output = new ItemStack()
 
-        this.outputSlot = new OutputSlot().setPosition(3, 1).setItem(this.output)
         for (let i = 0; i < 9; i++) {
             this.inputInventory.getItem(i).subscribeSlotToUpdate(() => { this.update() })
             let slot = new Slot()
                 .setItem(this.inputInventory.getItem(i))
                 .build()
-            this.SlotContainer.addSlot(slot)
+            this.inputSlots.addSlot(slot)
         }
+
+        this.outputSlot = new OutputSlot().setPosition(3, 1).setItem(this.output)
         this.outputSlotContainer.addSlot(this.outputSlot)
         this.outputslotSubscriptionId = this.outputSlot.subscribeToAction(() => { this.onOutputClick() })
         this.recipeMap = CRAFTING_RECIPE_MAP
@@ -35,10 +36,16 @@ export class CraftingTable {
         let background2 = new BackGround().setDecoration(1)
         this.gui = new Gui().setName("craftingTable").setDraggable().setSize(4.5, 3.5).addComponent(background2).addComponent(background)
         this.outputSlotContainer = new SlotCointainer().setSize(1, 1).setPosition(3.25, 1.25).setZLayer(4)
-        this.SlotContainer = new SlotCointainer().setSize(3, 3).setPosition(0.25, 0.25)
-        this.gui.addComponent(this.SlotContainer).addComponent(this.outputSlotContainer)
+        this.inputSlots = new SlotCointainer().setSize(3, 3).setPosition(0.25, 0.25)
+        this.gui.addComponent(this.inputSlots).addComponent(this.outputSlotContainer)
     }
     getContainer() {
+        return this.gui
+    }
+
+    getGui() {
+        if (!this.gui)
+            this.createGui()
         return this.gui
     }
     getShiftedInput() {
@@ -105,5 +112,19 @@ export class CraftingTable {
                 }
             }
         }
+    }
+
+    loadRecipe(recipe) {
+        console.log(recipe)
+        if (recipe instanceof ShapedRecipe) {
+            for (let i = 0; i < 9; i++) {
+                let slot = this.inputSlots.getSlot(i)
+                slot.setFakeItem(recipe.getInput(i))
+                delete slot.handleClick
+            }
+            this.outputSlot.setFakeItem(recipe.getOutput(0))
+
+        }
+        return this
     }
 }

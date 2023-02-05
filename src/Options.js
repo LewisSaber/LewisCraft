@@ -75,7 +75,7 @@ export default class OptionsController {
         for (const key in keyBinds) {
             let labelControll = new Label().setText(TranslateName(key)).setFontSize(0.3).setPosition(0.3, 0.3 + i * 0.6)
             this.controlsGui.addComponent(labelControll)
-            let button = new Button().setText(TranslateKeyCode(keyBinds[key])).setFontSize(0.3).setSize(2.5, .5).setPosition(3.6, 0.25 + i * 0.6)
+            let button = new Button().setText(TranslateKeyCode(keyBinds[key])).setFontSize(0.3).setSize(2.5, .5).setPosition(4, 0.25 + i * 0.6)
                 .addAction(() => {
 
                     if (listeningActive == false) {

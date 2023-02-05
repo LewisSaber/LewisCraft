@@ -1,4 +1,7 @@
+import { CraftingTable } from "./CraftingTable.js"
+import { classes } from "./Item.js"
 import ItemStack from "./ItemStack.js"
+import { getImg } from "./utility.js"
 
 
 
@@ -19,6 +22,40 @@ class CraftingRecipeMap {
                 return recipe
         }
     }
+    getUsageForNEI(itemName) {
+        let foundRecipes = []
+        for (let recipe of this.shapedRecipes) {
+            for (let i = 0; i < 9; i++) {
+                if (recipe.getInput(i).getName() == itemName) {
+                    foundRecipes.push(recipe)
+
+                    i = 9
+                }
+            }
+        }
+        let craftingTables = []
+        for (let recipe of foundRecipes) {
+            let table = new CraftingTable().loadRecipe(recipe)
+            craftingTables.push(table)
+        }
+        return craftingTables
+    }
+    getRecipeForNEI(itemName) {
+        let foundRecipes = []
+        for (let recipe of this.shapedRecipes) {
+            if (recipe.getOutput(0).getName() == itemName) {
+                foundRecipes.push(recipe)
+
+            }
+        }
+
+        let craftingTables = []
+        for (let recipe of foundRecipes) {
+            let table = new CraftingTable().loadRecipe(recipe)
+            craftingTables.push(table)
+        }
+        return craftingTables
+    }
 }
 
 class FurnaceRecipeMap {
@@ -35,6 +72,38 @@ class FurnaceRecipeMap {
             if (recipe.compareRecipe(ItemStack))
                 return recipe
         }
+    }
+
+    getUsageForNEI(itemName) {
+        let foundRecipes = []
+        for (let recipe of this.recipes) {
+            if (recipe.getInput(0).getName() == itemName) {
+                foundRecipes.push(recipe)
+            }
+        }
+
+        let furnaces = []
+        for (let recipe of foundRecipes) {
+            let furnace = new classes.furnace().loadRecipe(recipe)
+            furnaces.push(furnace)
+        }
+        return furnaces
+    }
+
+    getRecipeForNEI(itemName) {
+        let foundRecipes = []
+        for (let recipe of this.recipes) {
+            if (recipe.getOutput(0).getName() == itemName) {
+                foundRecipes.push(recipe)
+            }
+        }
+
+        let furnaces = []
+        for (let recipe of foundRecipes) {
+            let furnace = new classes.furnace().loadRecipe(recipe)
+            furnaces.push(furnace)
+        }
+        return furnaces
     }
 }
 
@@ -71,7 +140,7 @@ export class RecipeBase {
         this.stringedInputs[letter] = Item_Stack
         return this
     }
-    addOutputItem(item, count) {
+    addOutputItem(item, count = 1) {
         this.outputs.push(new ItemStack(item, count))
         return this
     }
@@ -187,9 +256,19 @@ export class ShapedRecipe extends RecipeBase {
     }
 }
 
+export function registerRecipeHandlers(NEI) {
+    NEI.registerHandler(CRAFTING_RECIPE_MAP, getImg('craftingtablefront'))
+    NEI.registerHandler(FURNACE_RECIPE_MAP, getImg('furnace'))
+}
 
 export function loadRecipes() {
     new ShapedRecipe().addString("    l    ").addLetterItem("l", "logoak", 1).addOutputItem("planksoak", 4).build()
     new ShapedRecipe().addString("    p  p ").addLetterItem("p", "planksoak", 1).addOutputItem("stick", 4).build()
+    new ShapedRecipe().addString("s  p").addLetterItem("s", "stick", 2).addLetterItem("p", "planksoak", 3).addOutputItem("furnace", 1).build()
+
+
+
+
     new FuranceRecipe().addInputItem("planksoak").addOutputItem("stick", 4).addTime(100).build()
+    new FuranceRecipe().addInputItem("stick", 2).addOutputItem("stone", 4).addTime(100).build()
 }

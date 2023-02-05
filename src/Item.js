@@ -7,7 +7,7 @@ import { Slot } from "./gui/Slot.js"
 import { SlotCointainer } from "./gui/SlotContainer.js"
 import { Inventory } from "./player.js"
 import TranslateName from "./Translator.js"
-import { FURNACE_RECIPE_MAP } from "./Recipes.js"
+import { FuranceRecipe, FURNACE_RECIPE_MAP } from "./Recipes.js"
 import ProgressBar from "./gui/Progressbar.js"
 import { Vector } from "./math.js"
 import { getImg } from "./utility.js"
@@ -192,12 +192,7 @@ classes.backpack = class backpack extends classes.Item {
         ]
         return list.join("<br>")
     }
-    onCopy(Original) {
-        for (let i = 0; i < this.inventory.getSize(); i++) {
-            this.inventory.getItem(i).setItem(Original.inventory.getItem(i).copy().getItem())
-            this.inventory.getItem(i).getItem().onCopy(Original.inventory.getItem())
-        }
-    }
+
 }
 
 classes.smallbackpack = class smallbackpack extends classes.backpack {
@@ -304,13 +299,13 @@ classes.furnace = class furnace extends classes.machine {
         this.gui.addComponent(labelFuel)
 
         let inputContainer = new SlotCointainer().setSize(1, 1).setPosition(0.65, labelOffset + .3)
-        let inputslot = new Slot().setItem(this.input).build()
-        inputContainer.addSlot(inputslot)
+        this.inputSlot = new Slot().setItem(this.input).build()
+        inputContainer.addSlot(this.inputSlot)
 
 
         let outputContainer = new SlotCointainer().setSize(1, 1).setPosition(2.5 + .25, labelOffset + 0.3)
-        let outputSlot = new OutputSlot().setItem(this.output).build()
-        outputContainer.addSlot(outputSlot)
+        this.outputSlot = new OutputSlot().setItem(this.output).build()
+        outputContainer.addSlot(this.outputSlot)
 
 
         let fuelContainer = new SlotCointainer().setSize(1, 1).setPosition(0.65, labelOffset + 2)
@@ -445,5 +440,16 @@ classes.furnace = class furnace extends classes.machine {
 
 
         }
+    }
+    loadRecipe(recipe) {
+        this.getGui()
+        if (recipe instanceof FuranceRecipe) {
+
+            this.inputSlot.setFakeItem(recipe.getInput(0))
+            delete this.inputSlot.handleClick
+            this.outputSlot.setFakeItem(recipe.getOutput(0))
+
+        }
+        return this
     }
 }

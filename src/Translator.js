@@ -13,10 +13,13 @@ TranslationTable.EN = {
     "MOVE_BACK": "Move Down",
     "MOVE_LEFT": "Move Left",
     "MOVE_RIGHT": "Move Rigth",
+    "SEARCH_RECIPE": "Show Item Recipes",
+    "SEARCH_USAGE": "Show Item Usage",
     "OPEN_INVENTORY": "Open Inventory",
     "logoak": "Oak Log",
     "planksoak": "Oak Planks",
-    'smallbackpack': "Small Backpack"
+    'smallbackpack': "Small Backpack",
+
 }
 
 export function TranslateKeyCode(KeyCode) {

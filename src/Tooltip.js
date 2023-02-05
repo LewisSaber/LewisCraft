@@ -1,10 +1,11 @@
+import { Slot } from "./gui/Slot.js";
 import { getRarityColor } from "./Item.js";
 import ItemStack from "./ItemStack.js";
 import TranslateName, { TranslateRarity } from "./Translator.js";
 console.log("initialised")
 export default class Tooltip {
     constructor() {
-        this.item = new ItemStack()
+        this.item = new Slot().setItem(new ItemStack())
         this.createContainer()
         this.hide()
         this.isText = false
@@ -53,7 +54,8 @@ export default class Tooltip {
         else
             slot = this.item
 
-        let Itemstack = slot.getItem()
+        let Itemstack = slot.getTooltipItem()
+
         let item = Itemstack.getItem()
         this.container.style.borderColor = getRarityColor(item.getRarity())
         this.container.innerHTML = `
@@ -68,7 +70,7 @@ export default class Tooltip {
     }
     clear() {
         this.hide()
-        this.item = new ItemStack()
+        this.item = new Slot().setItem(new ItemStack())
         this.text = undefined
         this.isText = false
     }

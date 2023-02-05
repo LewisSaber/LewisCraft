@@ -18,7 +18,8 @@ export default class Gui {
         this.activeGuis = {}
         this.positionalOptions = {
             fromButtom: false,
-            fromRight: false
+            fromRight: false,
+            centered: false
         }
         this.decoration = 0
         this.isBuilt = false
@@ -31,6 +32,7 @@ export default class Gui {
     getName() {
         return this.name
     }
+
     decorationGrid(size) {
         let pixelsize = this.getPixelSize()
         return {
@@ -219,7 +221,9 @@ export default class Gui {
     resizePosition(pixelSize = this.getPixelSize()) {
         let position = this.position.copy()
         if (this.parent) {
-
+            if (this.positionalOptions.centered) {
+                position = this.parent.size.sub_vec(this.size).scale(1 / 2)
+            }
 
             if (this.positionalOptions.fromButtom) {
                 position.y = this.parent.size.y - this.position.y
@@ -261,7 +265,13 @@ export default class Gui {
         }
 
     }
-
+    positionCenter() {
+        this.positionalOptions.centered = true
+        if (this.isBuilt) {
+            this.resizePosition()
+        }
+        return this
+    }
     positionFromButtom() {
         this.positionalOptions.fromButtom = true
         return this
@@ -286,7 +296,7 @@ export default class Gui {
         if (component.isBuilt == false)
             component.build()
         let shouldOpen = false
-        if (this.components[channel] == undefined) {
+        if (this.components[channel] == undefined || Object.keys(this.components[channel]).length == 0) {
             shouldOpen = true
             this.components[channel] = {}
 

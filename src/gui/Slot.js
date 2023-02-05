@@ -256,6 +256,7 @@ export class Slot {
     canAdd(ItemStack) {
         return this.getItem().canAdd(ItemStack)
     }
+
     onMouseEnter(event) {
         this.select()
         window.game.cursor.makeTooltip(this)

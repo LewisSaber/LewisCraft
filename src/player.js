@@ -54,6 +54,8 @@ export class Player extends Entity {
         this.addKeyBind("KeyS", KEYBIND_VALUES.MOVEMENT.MOVE_BACK)
         this.addKeyBind("KeyA", KEYBIND_VALUES.MOVEMENT.MOVE_LEFT)
         this.addKeyBind("KeyD", KEYBIND_VALUES.MOVEMENT.MOVE_RIGHT)
+        this.addKeyBind("KeyR", KEYBIND_VALUES.SEARCH_RECIPE)
+        this.addKeyBind("KeyU", KEYBIND_VALUES.SEARCH_USAGE)
         //this.addKeyBind("ArrowUp", KEYBIND_VALUES.ZOOMING.ZOOM_BIG)
         // this.addKeyBind("ArrowDown", KEYBIND_VALUES.ZOOMING.ZOOM_SMALL)
         this.addKeyBind("KeyE", KEYBIND_VALUES.OPEN_INVENTORY)
@@ -147,6 +149,20 @@ export class Player extends Entity {
                 this.hotbar.selectedSlot = digit
                 this.hotbar.getSlot(digit - 1).select()
             }
+        if (this.keyStates[KEYBIND_VALUES.SEARCH_RECIPE]) {
+            let item = game.getCursor().getTooltip().getItem().getTooltipItem()
+            console.log(item)
+            if (!item.isEmpty()) {
+                this.getGame().getNEI().showRecipe(item)
+            }
+        }
+        if (this.keyStates[KEYBIND_VALUES.SEARCH_USAGE]) {
+            let item = game.getCursor().getTooltip().getItem().getTooltipItem()
+            console.log(item)
+            if (!item.isEmpty()) {
+                this.getGame().getNEI().showUsage(item)
+            }
+        }
     }
     onKeyUp({ code }) {
         if (code == "ShiftLeft")
@@ -282,7 +298,7 @@ export class Player extends Entity {
             let slot = new Slot().setFilter((item) => item.getItem() instanceof classes.machine).setAdditionalInfo("R-Click to Open")
             slot.onPlace = () => {
                 if (!slot.isEmpty()) {
-                    console.log("on placing")
+                    // console.log("on placing")
                     slot.getItem().getItem().onPlace()
                     this.rootInventoryGui.addComponent(slot.getItem().getGui())
                     slot.getItem().getGui().setZLayer(100).setPosition(this.InventoryGui.position.add_vec(new Vector(3, 1))).close()
@@ -339,7 +355,7 @@ export class Player extends Entity {
                 if (!oldItem.isEmpty()) {
 
                     this.rootInventoryGui.removeComponent(oldItem.getItem().getGui())
-                    oldItem.getItem().getGui().removeComponent(slot.backButton)
+                    oldItem.getItem().getGui().removeComponent(oldItem.getItem().getGui().backButton)
                     delete slot.backButton
                 }
             }
