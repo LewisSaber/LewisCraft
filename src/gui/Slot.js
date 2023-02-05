@@ -63,6 +63,7 @@ export class Slot {
     setFakeItem(ItemStack) {
         this.fakeItem = ItemStack.copy()
         this.update()
+        return this
     }
     removeFakeItem() {
         delete this.fakeItem
@@ -281,5 +282,20 @@ export class Slot {
     }
     hide() {
         this.container.style.visibility = "hidden"
+    }
+    loadNEIBehaviour() {
+        this.onLeftClick = () => {
+            let item = this.getTooltipItem()
+            if (!item.isEmpty()) {
+                game.getNEI().showRecipe(item)
+            }
+        }
+        this.onRightClick = () => {
+            let item = this.getTooltipItem()
+            if (!item.isEmpty()) {
+                game.getNEI().showUsage(item)
+            }
+        }
+        return this
     }
 }

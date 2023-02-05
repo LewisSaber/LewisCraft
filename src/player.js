@@ -151,14 +151,12 @@ export class Player extends Entity {
             }
         if (this.keyStates[KEYBIND_VALUES.SEARCH_RECIPE]) {
             let item = game.getCursor().getTooltip().getItem().getTooltipItem()
-            console.log(item)
             if (!item.isEmpty()) {
                 this.getGame().getNEI().showRecipe(item)
             }
         }
         if (this.keyStates[KEYBIND_VALUES.SEARCH_USAGE]) {
             let item = game.getCursor().getTooltip().getItem().getTooltipItem()
-            console.log(item)
             if (!item.isEmpty()) {
                 this.getGame().getNEI().showUsage(item)
             }

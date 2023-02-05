@@ -119,10 +119,10 @@ export class CraftingTable {
         if (recipe instanceof ShapedRecipe) {
             for (let i = 0; i < 9; i++) {
                 let slot = this.inputSlots.getSlot(i)
-                slot.setFakeItem(recipe.getInput(i))
-                delete slot.handleClick
+                slot.setFakeItem(recipe.getInput(i)).loadNEIBehaviour()
+
             }
-            this.outputSlot.setFakeItem(recipe.getOutput(0))
+            this.outputSlot.setFakeItem(recipe.getOutput(0)).loadNEIBehaviour()
 
         }
         return this

@@ -445,9 +445,8 @@ classes.furnace = class furnace extends classes.machine {
         this.getGui()
         if (recipe instanceof FuranceRecipe) {
 
-            this.inputSlot.setFakeItem(recipe.getInput(0))
-            delete this.inputSlot.handleClick
-            this.outputSlot.setFakeItem(recipe.getOutput(0))
+            this.inputSlot.setFakeItem(recipe.getInput(0)).loadNEIBehaviour()
+            this.outputSlot.setFakeItem(recipe.getOutput(0)).loadNEIBehaviour()
 
         }
         return this
